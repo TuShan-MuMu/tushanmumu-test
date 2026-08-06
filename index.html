@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>涂山沐沐 | 梦想创造者的世界</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'></text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <canvas id="sakuraCanvas"></canvas>
+    <div class="stars" id="stars"></div>
+
+    <!-- Video background (fixed, stays in place) -->
+    <div class="home-video-bg">
+        <video id="bgVideo" autoplay loop playsinline muted></video>
+    </div>
+    <div class="home-video-overlay"></div>
+
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">涂山沐沐</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html" class="active">首页</a></li>
+                <li><a href="about.html">关于我</a></li>
+                <li><a href="articles.html">文章</a></li>
+                <li><a href="videos.html">视频</a></li>
+                <li><a href="works.html">作品</a></li>
+                <li><a href="resources.html">本站资源</a></li>
+            </ul>
+            <div class="nav-icons">
+                <button class="nav-icon-btn nav-restore-eye" id="eyeToggle" title="恢复显示内容">👁️</button>
+                <button class="nav-icon-btn muted" id="musicToggle" title="背景音乐">🎵</button>
+                <button class="menu-btn" id="menuBtn">☰</button>
+            </div>
+        </div>
+    </nav>
+
+    <audio id="bgmAudio" loop preload="none"></audio>
+
+    <div class="home-snap-container" id="snapContainer">
+        <!-- Section 1: Hero -->
+        <section class="home-section" id="section1">
+            <div class="home-hero-content">
+                <h1 class="home-title">涂山沐沐</h1>
+                <p class="home-subtitle">一个热爱动漫、游戏和创造的梦想家</p>
+                <div class="home-tags">
+                    <span class="home-tag">🌸 二次元</span>
+                    <span class="home-tag">🎮 游戏玩家</span>
+                    <span class="home-tag">🎨 创作者</span>
+                    <span class="home-tag">🎬 Godot 学习中</span>
+                </div>
+                <div class="home-enter">
+                    <a href="about.html">进入我的世界 →</a>
+                </div>
+            </div>
+            <div class="scroll-hint">↓</div>
+        </section>
+
+        <!-- Section 2: Video appreciation -->
+        <section class="home-section home-section-2" id="section2">
+            <div class="home-section-2-content">
+                <div class="section-2-title-row">
+                    <h2 class="section-title fade-in"><span class="emoji">🎬</span> 视频欣赏</h2>
+                    <button class="eye-btn" id="eyeToggleSection2" title="点击隐藏内容，沉浸式观看视频">👁️</button>
+                </div>
+                <div class="section-divider fade-in" style="margin:0.3rem auto 1.5rem;"></div>
+                <p class="fade-in" style="color:var(--text-light);font-size:0.95rem;margin-bottom:0.3rem;">这些是我喜欢的二次元视频作品，每次来访都会轮流播放~</p>
+                <p class="eye-hint fade-in">点上面的小眼睛可以隐藏内容，沉浸式看视频哦</p>
+                <div class="video-showcase hover-scale fade-in">
+                    <h3 id="videoTitle">正在播放</h3>
+                    <p id="videoDesc">背景视频的信息将显示在这里</p>
+                </div>
+                <div class="video-indicator" id="videoIndicator"></div>
+                <div style="margin-top:2rem;" class="fade-in">
+                    <a href="about.html" style="display:inline-flex;align-items:center;gap:0.5rem;padding:0.7rem 1.8rem;background:linear-gradient(135deg,var(--pink),var(--purple));color:white;border-radius:50px;text-decoration:none;font-weight:500;font-size:0.95rem;box-shadow:0 4px 20px rgba(255,143,171,0.3);transition:all 0.3s;">了解更多关于我 →</a>
+                </div>
+            </div>
+            <footer style="position:absolute;bottom:0;left:0;right:0;">
+                <div class="footer-contact">
+                    <a href="https://space.bilibili.com/379808121" target="_blank">📺 B站 · 初音上校</a>
+                    <a href="#">💬 QQ</a>
+                    <a href="#">✉️ 邮箱</a>
+                </div>
+                <p>用 <span class="heart">♥</span> 和梦想搭建 · 涂山沐沐 © 2026</p>
+            </footer>
+        </section>
+    </div>
+
+    <script>
+        // ===== Video rotation =====
+        const videos = [
+            { src: 'videos/miku-classic.mp4', title: 'MMD Classic - Miku', desc: '初音未来 MMD 舞蹈，经典曲目 Classic (MikuV4X Digitrevx)，2160P 高品质渲染。' },
+            { src: 'videos/livetune-redial.mp4', title: 'livetune feat. 初音ミク「Redial」', desc: 'livetune 制作的初音未来 MV，Redial 是一首充满感情的歌曲，音乐与画面的完美结合。' }
+        ];
+
+        // Get current video index from localStorage, cycle on each visit
+        let videoIndex = parseInt(localStorage.getItem('bgVideoIndex') || '0');
+        videoIndex = (videoIndex + 1) % videos.length;
+        localStorage.setItem('bgVideoIndex', videoIndex.toString());
+
+        const bgVideo = document.getElementById('bgVideo');
+        bgVideo.src = videos[videoIndex].src;
+        bgVideo.play().catch(() => {});
+
+        // Update showcase info
+        document.getElementById('videoTitle').textContent = videos[videoIndex].title;
+        document.getElementById('videoDesc').textContent = videos[videoIndex].desc;
+
+        // Video indicator dots
+        const indicator = document.getElementById('videoIndicator');
+        videos.forEach((_, i) => {
+            const dot = document.createElement('span');
+            dot.className = 'video-dot' + (i === videoIndex ? ' active' : '');
+            dot.title = videos[i].title;
+            indicator.appendChild(dot);
+        });
+
+        // ===== Music toggle (controls video audio on homepage) =====
+        const musicToggle = document.getElementById('musicToggle');
+        let isMuted = true;
+        musicToggle.addEventListener('click', () => {
+            isMuted = !isMuted;
+            bgVideo.muted = isMuted;
+            musicToggle.classList.toggle('muted', isMuted);
+        });
+
+        // ===== Eye toggle (hide/show section 2 content) =====
+        const eyeToggleSection2 = document.getElementById('eyeToggleSection2');
+        const eyeToggleNav = document.getElementById('eyeToggle');
+        let isContentHidden = false;
+
+        function toggleContent() {
+            isContentHidden = !isContentHidden;
+
+            if (isContentHidden) {
+                document.body.classList.add('content-hidden');
+                eyeToggleSection2.classList.add('eye-closed');
+                eyeToggleSection2.innerHTML = '🙈';
+                eyeToggleNav.classList.add('eye-closed');
+            } else {
+                document.body.classList.remove('content-hidden');
+                eyeToggleSection2.classList.remove('eye-closed');
+                eyeToggleSection2.innerHTML = '👁️';
+                eyeToggleNav.classList.remove('eye-closed');
+            }
+        }
+
+        eyeToggleSection2.addEventListener('click', toggleContent);
+        eyeToggleNav.addEventListener('click', () => {
+            if (isContentHidden) toggleContent();
+        });
+
+        // ===== Stars =====
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 60; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.setProperty('--duration', (2 + Math.random() * 4) + 's');
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.width = (2 + Math.random() * 3) + 'px';
+            star.style.height = star.style.width;
+            starsContainer.appendChild(star);
+        }
+
+        // ===== Sakura =====
+        const canvas = document.getElementById('sakuraCanvas');
+        const ctx = canvas.getContext('2d');
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Petal {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = -20;
+                this.size = 8 + Math.random() * 12;
+                this.speedY = 0.5 + Math.random() * 1.5;
+                this.speedX = -0.5 + Math.random() * 1;
+                this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.02;
+                this.opacity = 0.3 + Math.random() * 0.5;
+                this.wobble = Math.random() * Math.PI * 2;
+                this.wobbleSpeed = 0.02 + Math.random() * 0.03;
+            }
+            update() {
+                this.y += this.speedY;
+                this.wobble += this.wobbleSpeed;
+                this.x += this.speedX + Math.sin(this.wobble) * 0.5;
+                this.rotation += this.rotationSpeed;
+                if (this.y > canvas.height + 20) this.reset();
+            }
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation);
+                ctx.globalAlpha = this.opacity;
+                ctx.fillStyle = '#ffb7c5';
+                ctx.beginPath();
+                ctx.ellipse(0, 0, this.size * 0.6, this.size * 0.3, 0, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.fillStyle = '#ff8fab';
+                ctx.beginPath();
+                ctx.ellipse(this.size * 0.2, 0, this.size * 0.4, this.size * 0.2, 0.3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        const petals = Array.from({ length: 20 }, () => { const p = new Petal(); p.y = Math.random() * canvas.height; return p; });
+        function animateSakura() { ctx.clearRect(0, 0, canvas.width, canvas.height); petals.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateSakura); }
+        animateSakura();
+
+        // ===== Sparkle cursor =====
+        let lastSparkle = 0;
+        document.addEventListener('mousemove', (e) => {
+            const now = Date.now();
+            if (now - lastSparkle < 80) return;
+            lastSparkle = now;
+            const sparkle = document.createElement('div');
+            sparkle.className = 'sparkle';
+            sparkle.style.left = e.clientX - 4 + 'px';
+            sparkle.style.top = e.clientY - 4 + 'px';
+            document.body.appendChild(sparkle);
+            setTimeout(() => sparkle.remove(), 600);
+        });
+
+        // ===== Scroll animations =====
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // ===== Mobile menu =====
+        const menuBtn = document.getElementById('menuBtn');
+        const navLinks = document.getElementById('navLinks');
+        menuBtn.addEventListener('click', () => { navLinks.classList.toggle('active'); menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰'; });
+        navLinks.querySelectorAll('a').forEach(link => { link.addEventListener('click', () => { navLinks.classList.remove('active'); menuBtn.textContent = '☰'; }); });
+    </script>
+    <script src="bgm.js"></script>
+</body>
+</html>
