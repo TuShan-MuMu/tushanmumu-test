@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<!-- redeploy 202608061909 -->
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>关于我 | 涂山沐沐</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Anime card enhancements */
+        .anime-card {
+            position: relative;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        .anime-card:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 30px rgba(255, 143, 171, 0.3);
+            z-index: 10;
+        }
+        .anime-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+        .anime-add-card {
+            background: var(--bg-card);
+            border-radius: 14px;
+            overflow: hidden;
+            border: 2px dashed var(--pink);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 260px;
+        }
+        .anime-add-card:hover {
+            transform: scale(1.08);
+            box-shadow: 0 8px 30px rgba(255, 143, 171, 0.3);
+            border-color: var(--pink-deep);
+            background: rgba(255, 143, 171, 0.08);
+        }
+        .anime-add-card .add-icon {
+            font-size: 3rem;
+            color: var(--pink);
+            transition: color 0.3s;
+        }
+        .anime-add-card:hover .add-icon {
+            color: var(--pink-deep);
+        }
+
+        /* Modal styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-overlay.active {
+            display: flex;
+        }
+        .modal-content {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 480px;
+            width: 90%;
+            border: 1px solid var(--border);
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalIn 0.3s ease;
+        }
+        @keyframes modalIn {
+            from { opacity: 0; transform: translateY(20px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+        .modal-content h3 {
+            font-family: 'ZCOOL KuaiLe', cursive;
+            color: var(--pink-deep);
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+        .modal-field {
+            margin-bottom: 1.2rem;
+        }
+        .modal-field label {
+            display: block;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-bottom: 0.4rem;
+            font-weight: 500;
+        }
+        .modal-field input {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        .modal-field input:focus {
+            border-color: var(--pink);
+        }
+        .modal-field .hint {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-top: 0.3rem;
+        }
+        .modal-actions {
+            display: flex;
+            gap: 0.8rem;
+            margin-top: 1.5rem;
+        }
+        .modal-btn {
+            flex: 1;
+            padding: 0.7rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        .modal-btn-cancel {
+            background: rgba(0,0,0,0.05);
+            color: var(--text-light);
+        }
+        .modal-btn-cancel:hover {
+            background: rgba(0,0,0,0.1);
+        }
+        .modal-btn-confirm {
+            background: linear-gradient(135deg, var(--pink), var(--purple));
+            color: white;
+        }
+        .modal-btn-confirm:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+
+        /* Delete button on card */
+        .anime-delete-btn {
+            position: absolute;
+            top: 6px;
+            left: 6px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.55);
+            color: #fff;
+            border: none;
+            font-size: 16px;
+            line-height: 26px;
+            text-align: center;
+            cursor: pointer;
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.2s, background 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0;
+        }
+        .anime-card:hover .anime-delete-btn {
+            opacity: 1;
+        }
+        .anime-delete-btn:hover {
+            background: rgba(220, 50, 50, 0.85);
+        }
+        /* In batch mode, hide the single delete button */
+        .anime-card .anime-delete-btn.batch-hidden {
+            display: none !important;
+        }
+
+        /* Edit button */
+        .anime-edit-btn {
+            position: absolute;
+            top: 6px;
+            left: 36px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            background: rgba(0,0,0,0.55);
+            color: #fff;
+            border: none;
+            font-size: 14px;
+            cursor: pointer;
+            z-index: 20;
+            opacity: 0;
+            transition: opacity 0.2s, background 0.2s;
+        }
+        .anime-card:hover .anime-edit-btn {
+            opacity: 1;
+        }
+        .anime-edit-btn:hover {
+            background: rgba(52, 152, 219, 0.85);
+        }
+        .anime-card .anime-edit-btn.batch-hidden {
+            display: none !important;
+        }
+
+        /* Score badge — top right */
+        .anime-score {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(0,0,0,0.6);
+            color: #ffd700;
+            font-size: 0.72rem;
+            padding: 2px 7px;
+            border-radius: 10px;
+            z-index: 20;
+            font-weight: 500;
+            pointer-events: none;
+        }
+
+        /* Batch action buttons (confirm/cancel) — shown during batch mode */
+        .batch-action-btns {
+            display: none;
+            gap: 0.5rem;
+        }
+        .batch-action-btns.visible {
+            display: flex;
+        }
+        .batch-action-btns .batch-btn.confirm {
+            background: #e74c3c;
+            color: #fff;
+            border-color: #e74c3c;
+        }
+        .batch-action-btns .batch-btn.confirm:hover {
+            background: #c0392b;
+        }
+        .batch-action-btns .batch-btn.cancel {
+            background: rgba(0,0,0,0.06);
+        }
+        .batch-action-btns .batch-btn.cancel:hover {
+            background: rgba(0,0,0,0.12);
+        }
+
+        /* Cover preview in add modal */
+        .cover-preview {
+            margin-top: 0.5rem;
+            display: none;
+        }
+        .cover-preview img {
+            width: 80px;
+            height: 112px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+        .cover-preview .cp-label {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .open-bili-btn {
+            margin-top: 0.4rem;
+            padding: 0.3rem 0.7rem;
+            font-size: 0.75rem;
+            background: rgba(255,183,197,0.3);
+            border: 1px solid rgba(255,183,197,0.5);
+            border-radius: 6px;
+            color: var(--text);
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .open-bili-btn:hover {
+            background: rgba(255,183,197,0.5);
+        }
+
+        /* Batch mode */
+        .anime-card.batch-selected {
+            outline: 3px solid #e74c3c;
+            outline-offset: -3px;
+        }
+        .anime-card.batch-selected .anime-delete-overlay {
+            display: flex;
+        }
+        .anime-delete-overlay {
+            display: none;
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(231, 76, 60, 0.25);
+            align-items: center;
+            justify-content: center;
+            z-index: 15;
+            font-size: 2.5rem;
+            color: #fff;
+            text-shadow: 0 2px 8px rgba(0,0,0,0.4);
+            pointer-events: none;
+        }
+
+        /* Batch operation buttons */
+        .anime-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+        .anime-header .section-title {
+            margin-bottom: 0;
+        }
+        .batch-btns {
+            display: flex;
+            gap: 0.5rem;
+        }
+        .batch-btn {
+            padding: 0.4rem 0.9rem;
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            background: var(--bg-card);
+            color: var(--text);
+            font-size: 0.82rem;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+        .batch-btn:hover {
+            border-color: var(--pink);
+            color: var(--pink-deep);
+        }
+        .batch-btn.active {
+            background: var(--pink);
+            color: #fff;
+            border-color: var(--pink);
+        }
+
+        /* Batch add modal textarea */
+        .modal-field textarea {
+            width: 100%;
+            padding: 0.7rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.8);
+            font-size: 0.9rem;
+            color: var(--text);
+            outline: none;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+            resize: vertical;
+            min-height: 120px;
+            font-family: inherit;
+        }
+        .modal-field textarea:focus {
+            border-color: var(--pink);
+        }
+
+        /* Confirm delete modal list */
+        .confirm-delete-list {
+            max-height: 260px;
+            overflow-y: auto;
+            margin: 1rem 0;
+        }
+        .confirm-delete-item {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border);
+        }
+        .confirm-delete-item:last-child {
+            border-bottom: none;
+        }
+        .confirm-delete-item img {
+            width: 40px;
+            height: 56px;
+            object-fit: cover;
+            border-radius: 6px;
+            background: linear-gradient(135deg, #ffb7c5, #ff8fab);
+        }
+        .confirm-delete-item .cdi-title {
+            font-size: 0.9rem;
+            color: var(--text);
+        }
+    </style>
+</head>
+<body class="has-bg-image">
+    <canvas id="sakuraCanvas"></canvas>
+    <div class="stars" id="stars"></div>
+
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">涂山沐沐</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">首页</a></li>
+                <li><a href="about.html" class="active">关于我</a></li>
+                <li><a href="articles.html">文章</a></li>
+                <li><a href="videos.html">视频</a></li>
+                <li><a href="works.html">作品</a></li>
+                <li><a href="resources.html">本站资源</a></li>
+            </ul>
+            <div class="nav-icons">
+                <div class="music-control">
+                    <div class="music-panel">
+                        <span class="bgm-song-title" id="bgmSongTitle">World is Mine</span>
+                        <button class="music-ctrl-btn" id="bgmPrevBtn" title="上一首">⏮</button>
+                        <button class="music-ctrl-btn" id="bgmPlayBtn" title="播放">▶</button>
+                        <button class="music-ctrl-btn" id="bgmNextBtn" title="下一首">⏭</button>
+                    </div>
+                    <button class="nav-icon-btn" id="musicToggle" title="背景音乐">🎵</button>
+                </div>
+                <button class="menu-btn" id="menuBtn">☰</button>
+            </div>
+        </div>
+    </nav>
+
+    <audio id="bgmAudio" loop preload="none"></audio>
+
+    <div class="sub-nav">
+        <a href="#intro" class="active" onclick="showTab('intro', this)">基本信息</a>
+        <a href="#anime" onclick="showTab('anime', this)">追番</a>
+        <a href="#games" onclick="showTab('games', this)">游戏</a>
+        <a href="#dreams" onclick="showTab('dreams', this)">梦想</a>
+    </div>
+
+    <div class="page-content">
+        <div class="section-container">
+            <!-- Intro Tab -->
+            <div id="tab-intro" class="tab-content">
+                <h2 class="section-title fade-in"><span class="emoji">🌟</span> 关于我</h2>
+                <div class="section-divider fade-in"></div>
+                <div class="about-grid">
+                    <div class="about-card hover-scale fade-in">
+                        <h3>🌸 我是谁</h3>
+                        <p>嗨，我是涂山沐沐，一个沉浸在二次元世界里的创造者。我喜欢看动漫、玩游戏，更热爱把脑海中的幻想变成现实。</p>
+                        <p>我正在学习 Godot 引擎，未来想做出属于自己的大作。这条路很长，但每一步都充满期待。</p>
+                    </div>
+                    <div class="about-card hover-scale fade-in">
+                        <h3>📋 基本信息</h3>
+                        <ul class="about-info-list">
+                            <li><span class="label">昵称</span><span class="value">涂山沐沐 / 初音上校</span></li>
+                            <li><span class="label">爱好</span><span class="value">动漫 · 游戏 · 创作</span></li>
+                            <li><span class="label">学习</span><span class="value">Godot 引擎</span></li>
+                            <li><span class="label">目标</span><span class="value">做出自己的 3A 大作</span></li>
+                            <li><span class="label">B站</span><span class="value"><a href="https://space.bilibili.com/379808121" target="_blank" style="color:var(--pink-deep);text-decoration:none;">初音上校</a></span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Anime Tab -->
+            <div id="tab-anime" class="tab-content" style="display:none;">
+                <div class="anime-header fade-in">
+                    <h2 class="section-title"><span class="emoji">📺</span> 我的追番</h2>
+                    <div class="batch-btns" id="batchBtns">
+                        <button class="batch-btn" id="batchDeleteBtn" title="批量删除">🗑 批量删除</button>
+                        <button class="batch-btn" id="batchAddBtn" title="批量添加">➕ 批量添加</button>
+                        <button class="batch-btn" id="exportBtn" title="导出追番列表">📤 导出</button>
+                        <button class="batch-btn" id="importBtn" title="导入追番列表">📥 导入</button>
+                        <input type="file" id="importFileInput" accept=".json" style="display:none;">
+                    </div>
+                    <div class="batch-action-btns" id="batchActionBtns">
+                        <button class="batch-btn confirm" id="batchConfirmBtn">🗑 确认删除</button>
+                        <button class="batch-btn cancel" id="batchCancelBtn">✕ 取消</button>
+                    </div>
+                </div>
+                <div class="section-divider fade-in"></div>
+                <p class="section-subtitle fade-in">从我的B站追番列表中精选，每一部都是我喜欢的故事</p>
+                <div class="anime-grid" id="animeGrid"></div>
+            </div>
+
+            <!-- Games Tab -->
+            <div id="tab-games" class="tab-content" style="display:none;">
+                <h2 class="section-title fade-in"><span class="emoji">🎮</span> 游戏世界</h2>
+                <div class="section-divider fade-in"></div>
+                <div class="games-grid">
+                    <div class="game-card hover-scale fade-in">
+                        <div class="game-icon">⚔️</div>
+                        <div class="game-info">
+                            <h4>明日方舟</h4>
+                            <p>泰拉世界的冒险者，罗德岛的博士。策略塔防，深度剧情，美术一流。</p>
+                            <span class="game-tag">策略塔防</span>
+                        </div>
+                    </div>
+                    <div class="game-card hover-scale fade-in">
+                        <div class="game-icon">🌐</div>
+                        <div class="game-info">
+                            <h4>Godot 引擎</h4>
+                            <p>正在学习的开源游戏引擎，轻量强大，适合独立开发者。未来大作的起点！</p>
+                            <span class="game-tag">游戏开发</span>
+                        </div>
+                    </div>
+                    <div class="game-card hover-scale fade-in">
+                        <div class="game-icon">🗡️</div>
+                        <div class="game-info">
+                            <h4>更多游戏</h4>
+                            <p>各种类型的游戏都是我的最爱。从游戏中汲取灵感，也是我学习游戏设计的重要途径。</p>
+                            <span class="game-tag">广泛涉猎</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dreams Tab -->
+            <div id="tab-dreams" class="tab-content" style="display:none;">
+                <h2 class="section-title fade-in"><span class="emoji">🌙</span> 我的梦想路线图</h2>
+                <div class="section-divider fade-in"></div>
+                <p class="section-subtitle fade-in">一切都在为最终的那个大作铺路，每一步都算数</p>
+                <div class="dreams-timeline">
+                    <div class="dream-item active fade-in">
+                        <div class="dream-card hover-scale">
+                            <h4>🎮 学习 Godot 引擎 <span class="dream-badge doing">进行中</span></h4>
+                            <p>从制作小游戏开始，学习游戏开发的核心概念。Godot 是通往 UE 的跳板，先在这里打好基础。</p>
+                        </div>
+                    </div>
+                    <div class="dream-item fade-in">
+                        <div class="dream-card hover-scale">
+                            <h4>✍️ 写小说 / 文案创作 <span class="dream-badge planned">计划中</span></h4>
+                            <p>好的游戏需要好的故事。通过写小说来锻炼叙事能力，为未来的游戏世界观构建做准备。</p>
+                        </div>
+                    </div>
+                    <div class="dream-item fade-in">
+                        <div class="dream-card hover-scale">
+                            <h4>🎨 绘画 & 建模 <span class="dream-badge planned">计划中</span></h4>
+                            <p>学习美术基础，掌握角色设计和 3D 建模。自己做的角色，才有灵魂。</p>
+                        </div>
+                    </div>
+                    <div class="dream-item fade-in">
+                        <div class="dream-card hover-scale">
+                            <h4>🎬 AI 漫剧制作 <span class="dream-badge planned">计划中</span></h4>
+                            <p>用 AI 工具辅助创作漫画/动画短片，把脑海中的故事视觉化，也是练习分镜和叙事的好方式。</p>
+                        </div>
+                    </div>
+                    <div class="dream-item fade-in">
+                        <div class="dream-card hover-scale">
+                            <h4>🏰 我的 3A 大作 <span class="dream-badge dream">终极梦想</span></h4>
+                            <p>一切的终点——用积累的文案、美术、技术能力，做出一个属于自己的、有完整世界观的大作。这条路很长，但我会一直走下去。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Anime Modal -->
+    <div class="modal-overlay" id="addAnimeModal">
+        <div class="modal-content">
+            <h3>✨ 添加追番</h3>
+            <div class="modal-field">
+                <label>B站番剧编号</label>
+                <input type="text" id="animeUrl" placeholder="例如：md26367205">
+                <div class="hint" id="autoFillHint">输入B站番剧页面的md编号，如 md26367205</div>
+            </div>
+            <div class="modal-field">
+                <label>番剧名称</label>
+                <input type="text" id="animeTitle" placeholder="输入番剧名称">
+            </div>
+            <div class="modal-field">
+                <label>封面图片链接（可选）</label>
+                <input type="text" id="animeCover" placeholder="封面图片URL">
+                <div class="hint" id="coverHint">获取方式：① API自动获取（输入md编号后自动填充）② 点下方按钮打开B站页面，右键封面图 → 复制图像链接 → 粘贴到这里</div>
+                <button type="button" id="openBiliPage" class="open-bili-btn" style="display:none;">🔗 打开B站番剧页面</button>
+            </div>
+            <div class="cover-preview" id="coverPreview">
+                <div class="cp-label">封面预览</div>
+                <img id="coverPreviewImg" src="" alt="cover" referrerpolicy="no-referrer">
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" id="cancelAdd">取消</button>
+                <button class="modal-btn modal-btn-confirm" id="confirmAdd">添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Batch Add Modal -->
+    <div class="modal-overlay" id="batchAddModal">
+        <div class="modal-content">
+            <h3>📋 批量添加追番</h3>
+            <div class="modal-field">
+                <label>B站番剧编号</label>
+                <textarea id="batchAddUrls" placeholder="每行一个编号，或用空格/逗号分隔&#10;md28235433&#10;md28222843&#10;md26367205"></textarea>
+                <div class="hint">支持换行、空格、逗号分隔多个编号，格式如 md28235433</div>
+                <div id="batchProgress" style="display:none;margin-top:0.8rem;">
+                    <div style="background:rgba(0,0,0,0.06);border-radius:8px;height:8px;overflow:hidden;">
+                        <div id="batchProgressBar" style="background:linear-gradient(90deg,#ff8fab,#ffb7c5);height:100%;width:0%;transition:width 0.3s;"></div>
+                    </div>
+                    <div id="batchProgressText" style="font-size:0.75rem;color:var(--text-light);margin-top:0.3rem;text-align:center;">准备中...</div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" id="cancelBatchAdd">取消</button>
+                <button class="modal-btn modal-btn-confirm" id="confirmBatchAdd">批量添加</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Confirm Delete Modal -->
+    <div class="modal-overlay" id="confirmDeleteModal">
+        <div class="modal-content">
+            <h3>⚠️ 确认删除</h3>
+            <p style="color:var(--text-light);font-size:0.9rem;margin-bottom:0.5rem;">即将删除以下 <strong id="deleteCount">0</strong> 部番剧：</p>
+            <div class="confirm-delete-list" id="confirmDeleteList"></div>
+            <div class="modal-actions">
+                <button class="modal-btn modal-btn-cancel" id="cancelDelete">取消</button>
+                <button class="modal-btn modal-btn-confirm" id="confirmDeleteBtn" style="background:linear-gradient(135deg,#e74c3c,#c0392b);">确认删除</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-contact">
+            <a href="https://space.bilibili.com/379808121" target="_blank"> B站 · 初音上校</a>
+            <a href="#">💬 QQ</a>
+            <a href="#">✉️ 邮箱</a>
+        </div>
+        <p>用 <span class="heart">♥</span> 和梦想搭建 · 涂山沐沐 © 2026</p>
+    </footer>
+
+    <script>
+        // Tab switching
+        function showTab(name, el) {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+            document.getElementById('tab-' + name).style.display = 'block';
+            document.querySelectorAll('.sub-nav a').forEach(a => a.classList.remove('active'));
+            if (el) el.classList.add('active');
+        }
+
+        // Default anime list — empty, users add their own
+        const defaultAnimeList = [];
+
+        // Load / Save
+        function loadAnimeList() {
+            const saved = localStorage.getItem('tushanmumu_anime_list');
+            if (saved) { try { return JSON.parse(saved); } catch(e) { return []; } }
+            return [];
+        }
+        function saveAnimeList(list) { localStorage.setItem('tushanmumu_anime_list', JSON.stringify(list)); }
+
+        // Validation — only accept md number format (e.g., md26367205)
+        function isValidMediaId(input) {
+            return /^md\d+$/.test(input.trim());
+        }
+        function extractMediaId(input) {
+            const m = input.trim().match(/^md(\d+)$/);
+            return m ? m[1] : null;
+        }
+
+        // Validate cover URL format
+        function isValidCoverUrl(url) {
+            // Accept any http/https URL that looks like an image (contains common image extensions or bilibili image domains)
+            const trimmed = url.trim();
+            if (!trimmed.startsWith('http://') && !trimmed.startsWith('https://')) return false;
+            // Check for image extension or bilibili image domain
+            return /\.(jpg|jpeg|png|webp|gif)(\?.*)?$/i.test(trimmed) || /hdslb\.com\/bfs\/bangumi\//i.test(trimmed);
+        }
+
+        // === B站 API 代理配置 ===
+        // 注意：B站屏蔽了 Cloudflare/AWS 等云 IP，Cloudflare Worker 方案不可用
+        // 保留公共 CORS 代理作为"尽力而为"的尝试，但不保证成功
+        // 如果自动填充失败，用户需要手动输入番剧信息
+        const BILI_API_PROXY = ''; // 留空，Cloudflare Worker 被 B站屏蔽
+
+        // Fetch anime metadata from Bilibili API
+        // Priority: JSONP (bypasses CORS) → direct fetch → CORS proxies (best effort)
+        // JSONP helper — bypasses CORS because <script> tags are not restricted by same-origin policy
+        function jsonpFetch(url, callbackParam = 'callback', timeout = 10000) {
+            return new Promise((resolve, reject) => {
+                const cbName = '_biliCb_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7);
+                const sep = url.includes('?') ? '&' : '?';
+                const script = document.createElement('script');
+                const timer = setTimeout(() => { cleanup(); reject(new Error('JSONP timeout')); }, timeout);
+                function cleanup() {
+                    clearTimeout(timer);
+                    delete window[cbName];
+                    if (script.parentNode) script.parentNode.removeChild(script);
+                }
+                window[cbName] = (data) => { cleanup(); resolve(data); };
+                script.src = url + sep + callbackParam + '=' + cbName;
+                script.onerror = () => { cleanup(); reject(new Error('JSONP load error')); };
+                document.head.appendChild(script);
+            });
+        }
+
+        // Session-level metadata cache to avoid duplicate API calls
+        const metaCache = new Map();
+
+        // Concurrent fetch helper — process items with limited parallelism
+        async function fetchConcurrent(items, fn, concurrency = 3) {
+            const results = [];
+            const queue = [...items];
+            async function worker() {
+                while (queue.length > 0) {
+                    const item = queue.shift();
+                    results.push(await fn(item));
+                }
+            }
+            const workers = Array.from({ length: Math.min(concurrency, items.length) }, () => worker());
+            await Promise.all(workers);
+            return results;
+        }
+
+        async function fetchAnimeMeta(mediaId) {
+            if (!mediaId) return null;
+
+            // Check cache first
+            if (metaCache.has(mediaId)) {
+                console.log('[Cache] Hit for md' + mediaId);
+                return metaCache.get(mediaId);
+            }
+
+            const apiUrl = `https://api.bilibili.com/pgc/review/user?media_id=${mediaId}`;
+            // Alternative API endpoint — returns similar media info
+            const apiUrl2 = `https://api.bilibili.com/pgc/view/web/season?media_id=${mediaId}`;
+
+            // Helper to extract metadata from API response
+            function extractMeta(data) {
+                if (data && data.code === 0 && data.result && data.result.media) {
+                    const m = data.result.media;
+                    let cover = m.cover || null;
+                    if (cover) {
+                        if (cover.startsWith('//')) cover = 'https:' + cover;
+                        else if (cover.startsWith('http://')) cover = 'https://' + cover.slice(7);
+                    }
+                    return { title: m.title || null, cover: cover, score: m.rating?.score || null };
+                }
+                return null;
+            }
+
+            // Helper: JSONP with retry (exponential backoff)
+            async function jsonpWithRetry(url, maxRetries = 2, timeout = 15000) {
+                for (let attempt = 0; attempt <= maxRetries; attempt++) {
+                    try {
+                        const data = await jsonpFetch(url, 'callback', timeout);
+                        const meta = extractMeta(data);
+                        if (meta) return meta;
+                    } catch(e) {
+                        console.log(`JSONP attempt ${attempt + 1}/${maxRetries + 1} failed:`, e.message);
+                        if (attempt < maxRetries) {
+                            // Exponential backoff: 2s, 4s
+                            await new Promise(r => setTimeout(r, 2000 * Math.pow(2, attempt)));
+                        }
+                    }
+                }
+                return null;
+            }
+
+            // 1. Try primary API with JSONP + retry
+            let meta = await jsonpWithRetry(apiUrl);
+            if (meta) { metaCache.set(mediaId, meta); return meta; }
+
+            // 2. Try alternative API endpoint with JSONP + retry
+            console.log('Primary API failed, trying alternative endpoint...');
+            meta = await jsonpWithRetry(apiUrl2, 1, 12000);
+            if (meta) { metaCache.set(mediaId, meta); return meta; }
+
+            // 3. Fallback: direct fetch and CORS proxies (best effort)
+            console.log('All JSONP attempts failed, trying direct fetch...');
+            const urls = [];
+            if (BILI_API_PROXY) {
+                urls.push(`${BILI_API_PROXY}?media_id=${mediaId}`);
+            }
+            urls.push(apiUrl);
+            urls.push(`https://corsproxy.io/?${encodeURIComponent(apiUrl)}`);
+            urls.push(`https://api.allorigins.win/raw?url=${encodeURIComponent(apiUrl)}`);
+
+            for (const url of urls) {
+                try {
+                    const resp = await fetch(url);
+                    if (!resp.ok) continue;
+                    const data = await resp.json();
+                    const meta = extractMeta(data);
+                    if (meta) { metaCache.set(mediaId, meta); return meta; }
+                } catch(e) {
+                    // Try next URL
+                }
+            }
+            console.log('B站API所有请求方式均失败');
+            return null;
+        }
+
+        // Auto-fill when md number is entered
+        let autoFillTimer = null;
+        let autoFilledScore = null; // Track auto-fetched score for confirmAdd
+        const autoFillHint = document.getElementById('autoFillHint');
+        const defaultHintText = '输入B站番剧页面的md编号，如 md26367205';
+
+        document.getElementById('animeUrl').addEventListener('input', () => {
+            clearTimeout(autoFillTimer);
+            autoFilledScore = null;
+            autoFillHint.textContent = defaultHintText;
+            autoFillHint.style.color = '';
+            enrichCancelled = true; // Stop enrichDefaultCovers when user starts typing
+
+            autoFillTimer = setTimeout(async () => {
+                const input = document.getElementById('animeUrl').value.trim();
+                if (!isValidMediaId(input)) return;
+                const mediaId = extractMediaId(input);
+                if (!mediaId) return;
+
+                autoFillHint.textContent = '正在获取番剧信息...';
+                autoFillHint.style.color = '#888';
+
+                const meta = await fetchAnimeMeta(mediaId);
+                if (!meta) {
+                    autoFillHint.textContent = '自动获取失败，请手动填写番剧名称和封面';
+                    autoFillHint.style.color = '#e74c3c';
+                    return;
+                }
+
+                // Auto-fill title if empty or default
+                const titleInput = document.getElementById('animeTitle');
+                if (!titleInput.value.trim() || titleInput.value.startsWith('番剧 ')) {
+                    titleInput.value = meta.title || '';
+                }
+
+                // Auto-fill cover if available
+                if (meta.cover) {
+                    document.getElementById('animeCover').value = meta.cover;
+                    document.getElementById('coverPreviewImg').src = meta.cover;
+                    document.getElementById('coverPreview').style.display = 'block';
+                }
+
+                // Store score for confirmAdd to use
+                autoFilledScore = meta.score;
+                autoFillHint.textContent = `已获取：${meta.title}${meta.score ? ' (评分 ' + meta.score + ')' : ''}`;
+                autoFillHint.style.color = '#27ae60';
+            }, 600);
+        });
+
+        // Show/hide "打开B站页面" button based on md number input
+        const openBiliBtn = document.getElementById('openBiliPage');
+        document.getElementById('animeUrl').addEventListener('input', () => {
+            const input = document.getElementById('animeUrl').value.trim();
+            if (isValidMediaId(input)) {
+                const mid = extractMediaId(input);
+                openBiliBtn.dataset.mediaId = mid;
+                openBiliBtn.style.display = 'inline-block';
+            } else {
+                openBiliBtn.style.display = 'none';
+            }
+        });
+        openBiliBtn.addEventListener('click', () => {
+            const mid = openBiliBtn.dataset.mediaId;
+            if (mid) window.open(`https://www.bilibili.com/bangumi/media/md${mid}/`, '_blank');
+        });
+
+        // Batch mode state
+        let batchMode = false;
+        let batchSelected = new Set();
+
+        // Render anime grid
+        function renderAnimeGrid() {
+            const animeList = loadAnimeList();
+            const animeGrid = document.getElementById('animeGrid');
+            animeGrid.innerHTML = '';
+
+            animeList.forEach((anime, i) => {
+                const card = document.createElement('div');
+                card.className = 'anime-card hover-scale fade-in';
+                card.dataset.index = i;
+                if (batchMode && batchSelected.has(i)) card.classList.add('batch-selected');
+
+                const coverHtml = anime.cover
+                    ? `<img src="${anime.cover}" alt="${anime.title}" referrerpolicy="no-referrer" onerror="this.parentElement.style.background='linear-gradient(135deg, #ffb7c5, #ff8fab)'; this.style.display='none';">`
+                    : '';
+                const fallbackBg = !anime.cover ? 'background: linear-gradient(135deg, #ffb7c5, #ff8fab)' : '';
+
+                card.innerHTML = `
+                    <div class="anime-cover" style="${fallbackBg}">
+                        ${coverHtml}
+                        ${anime.score ? `<span class="anime-score">★ ${anime.score}</span>` : ''}
+                        <button class="anime-delete-btn ${batchMode ? 'batch-hidden' : ''}" data-index="${i}" title="删除">−</button>
+                        <button class="anime-edit-btn ${batchMode ? 'batch-hidden' : ''}" data-index="${i}" title="编辑">✎</button>
+                        <div class="anime-delete-overlay">❌</div>
+                    </div>
+                    <div class="anime-info"><div class="anime-name">${anime.title}</div></div>
+                `;
+
+                // Delete button (single delete — only works outside batch mode)
+                const deleteBtn = card.querySelector('.anime-delete-btn');
+                if (!batchMode) {
+                    deleteBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        singleDeleteConfirm(i);
+                    });
+                }
+
+                // Edit button (only works outside batch mode)
+                const editBtn = card.querySelector('.anime-edit-btn');
+                if (!batchMode) {
+                    editBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        openEditModal(i);
+                    });
+                }
+
+                // Card click
+                card.addEventListener('click', () => {
+                    if (batchMode) {
+                        toggleBatchSelect(i, card);
+                    } else if (anime.biliUrl) {
+                        window.open(anime.biliUrl, '_blank');
+                    }
+                });
+
+                animeGrid.appendChild(card);
+            });
+
+            // Add "+" button card
+            const addCard = document.createElement('div');
+            addCard.className = 'anime-add-card fade-in';
+            addCard.innerHTML = '<div class="add-icon">+</div>';
+            addCard.addEventListener('click', () => {
+                if (batchMode) return;
+                document.getElementById('addAnimeModal').classList.add('active');
+            });
+            animeGrid.appendChild(addCard);
+
+            // Re-observe fade-in elements
+            document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+        }
+
+        // Single delete with confirmation
+        function singleDeleteConfirm(index) {
+            const animeList = loadAnimeList();
+            const anime = animeList[index];
+            if (!anime) return;
+
+            const listEl = document.getElementById('confirmDeleteList');
+            const countEl = document.getElementById('deleteCount');
+            countEl.textContent = '1';
+            listEl.innerHTML = `
+                <div class="confirm-delete-item">
+                    ${anime.cover ? `<img src="${anime.cover}" alt="${anime.title}">` : '<div style="width:40px;height:56px;border-radius:6px;background:linear-gradient(135deg,#ffb7c5,#ff8fab);"></div>'}
+                    <span class="cdi-title">${anime.title}</span>
+                </div>
+            `;
+            document.getElementById('confirmDeleteModal').classList.add('active');
+
+            document.getElementById('confirmDeleteBtn').onclick = () => {
+                const list = loadAnimeList();
+                list.splice(index, 1);
+                saveAnimeList(list);
+                renderAnimeGrid();
+                document.getElementById('confirmDeleteModal').classList.remove('active');
+            };
+        }
+
+        // Batch select toggle
+        function toggleBatchSelect(index, card) {
+            if (batchSelected.has(index)) {
+                batchSelected.delete(index);
+                card.classList.remove('batch-selected');
+            } else {
+                batchSelected.add(index);
+                card.classList.add('batch-selected');
+            }
+        }
+
+        // Batch delete confirm
+        function batchDeleteConfirm() {
+            if (batchSelected.size === 0) { alert('请先点击要删除的卡片'); return; }
+
+            const animeList = loadAnimeList();
+            const listEl = document.getElementById('confirmDeleteList');
+            const countEl = document.getElementById('deleteCount');
+            countEl.textContent = batchSelected.size;
+
+            let html = '';
+            const sortedIndices = [...batchSelected].sort((a, b) => a - b);
+            sortedIndices.forEach(i => {
+                const anime = animeList[i];
+                if (!anime) return;
+                html += `<div class="confirm-delete-item">
+                    ${anime.cover ? `<img src="${anime.cover}" alt="${anime.title}">` : '<div style="width:40px;height:56px;border-radius:6px;background:linear-gradient(135deg,#ffb7c5,#ff8fab);"></div>'}
+                    <span class="cdi-title">${anime.title}</span>
+                </div>`;
+            });
+            listEl.innerHTML = html;
+            document.getElementById('confirmDeleteModal').classList.add('active');
+
+            document.getElementById('confirmDeleteBtn').onclick = () => {
+                const list = loadAnimeList();
+                const indices = [...batchSelected].sort((a, b) => b - a);
+                indices.forEach(i => list.splice(i, 1));
+                saveAnimeList(list);
+                batchSelected.clear();
+                exitBatchMode();
+                renderAnimeGrid();
+                document.getElementById('confirmDeleteModal').classList.remove('active');
+            };
+        }
+
+        // Batch mode toggle
+        function enterBatchMode() {
+            batchMode = true;
+            batchSelected.clear();
+            document.getElementById('batchBtns').style.display = 'none';
+            document.getElementById('batchActionBtns').classList.add('visible');
+            renderAnimeGrid();
+        }
+        function exitBatchMode() {
+            batchMode = false;
+            batchSelected.clear();
+            document.getElementById('batchBtns').style.display = '';
+            document.getElementById('batchActionBtns').classList.remove('visible');
+            renderAnimeGrid();
+        }
+
+        // Batch add — concurrent fetching with progress display
+        async function batchAdd() {
+            const raw = document.getElementById('batchAddUrls').value.trim();
+            if (!raw) { alert('请输入至少一个番剧编号'); return; }
+
+            // Split by newline, comma, space
+            const inputs = raw.split(/[\n,，\s]+/).map(s => s.trim()).filter(s => s.length > 0);
+            const validInputs = inputs.filter(isValidMediaId);
+
+            if (validInputs.length === 0) { alert('没有有效的番剧编号\n\n格式：md28235433'); return; }
+
+            const list = loadAnimeList();
+
+            // Filter out duplicates first
+            const toAdd = [];
+            let skipped = 0;
+            for (const input of validInputs) {
+                const mediaId = extractMediaId(input);
+                const biliUrl = `https://www.bilibili.com/bangumi/media/md${mediaId}/`;
+                if (list.some(a => a.biliUrl === biliUrl) || toAdd.some(a => a.biliUrl === biliUrl)) {
+                    skipped++;
+                    continue;
+                }
+                toAdd.push({ mediaId, biliUrl });
+            }
+
+            if (toAdd.length === 0) {
+                alert(`全部 ${validInputs.length} 个编号都已存在，无需添加`);
+                return;
+            }
+
+            // Show progress UI
+            const progressDiv = document.getElementById('batchProgress');
+            const progressBar = document.getElementById('batchProgressBar');
+            const progressText = document.getElementById('batchProgressText');
+            const confirmBtn = document.getElementById('confirmBatchAdd');
+            progressDiv.style.display = 'block';
+            confirmBtn.disabled = true;
+            confirmBtn.textContent = '获取中...';
+
+            let completed = 0;
+            let successCount = 0;
+
+            // Concurrent fetch with progress
+            await fetchConcurrent(toAdd, async (item) => {
+                const meta = await fetchAnimeMeta(item.mediaId);
+                list.push({
+                    title: meta?.title || `番剧 md${item.mediaId}`,
+                    score: meta?.score || null,
+                    biliUrl: item.biliUrl,
+                    cover: meta?.cover || ''
+                });
+                if (meta) successCount++;
+                completed++;
+                const pct = Math.round((completed / toAdd.length) * 100);
+                progressBar.style.width = pct + '%';
+                progressText.textContent = `已获取 ${completed}/${toAdd.length}（成功 ${successCount}）`;
+            }, 3);
+
+            saveAnimeList(list);
+
+            // Reset UI
+            progressDiv.style.display = 'none';
+            progressBar.style.width = '0%';
+            confirmBtn.disabled = false;
+            confirmBtn.textContent = '批量添加';
+            document.getElementById('batchAddModal').classList.remove('active');
+            document.getElementById('batchAddUrls').value = '';
+            renderAnimeGrid();
+
+            const invalidCount = inputs.length - validInputs.length;
+            let msg = `成功添加 ${toAdd.length} 部番剧（自动获取 ${successCount} 部）`;
+            if (skipped > 0) msg += `，跳过 ${skipped} 部重复`;
+            if (invalidCount > 0) msg += `，${invalidCount} 个格式无效`;
+            alert(msg);
+        }
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Fix existing cover URLs in localStorage (convert http:// to https:// for HTTPS pages)
+        function fixCoverUrls() {
+            const list = loadAnimeList();
+            let changed = false;
+            for (const anime of list) {
+                if (anime.cover && anime.cover.startsWith('http://')) {
+                    anime.cover = 'https://' + anime.cover.slice(7);
+                    changed = true;
+                }
+            }
+            if (changed) {
+                saveAnimeList(list);
+            }
+        }
+        fixCoverUrls();
+
+        // Track if enrichDefaultCovers is running (to prevent race conditions with user add)
+        let enrichRunning = true;
+        let enrichCancelled = false; // Set to true when user starts interacting to stop enrich
+
+        // Initial render
+        renderAnimeGrid();
+
+        // Auto-enrich default list items with covers, scores, and accurate titles from API
+        async function enrichDefaultCovers() {
+            const list = loadAnimeList();
+            if (list.length === 0) { enrichRunning = false; return; }
+            let changed = false;
+            for (let i = 0; i < list.length; i++) {
+                if (enrichCancelled) break; // Stop if user started interacting
+                const anime = list[i];
+                const mediaId = extractMediaId(anime.biliUrl);
+                if (!mediaId) continue;
+                const meta = await fetchAnimeMeta(mediaId);
+                if (meta) {
+                    if (!anime.cover && meta.cover) { anime.cover = meta.cover; changed = true; }
+                    if (!anime.score && meta.score) { anime.score = meta.score; changed = true; }
+                    // Always update title from API if available (API titles are authoritative)
+                    if (meta.title && anime.title !== meta.title) {
+                        anime.title = meta.title;
+                        changed = true;
+                    }
+                }
+            }
+            if (changed && !enrichCancelled) {
+                saveAnimeList(list);
+                renderAnimeGrid();
+            }
+            enrichRunning = false;
+        }
+        enrichDefaultCovers();
+
+        // --- Modal: single add ---
+        document.getElementById('cancelAdd').addEventListener('click', () => {
+            document.getElementById('addAnimeModal').classList.remove('active');
+            clearModalFields();
+        });
+        document.getElementById('addAnimeModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) { document.getElementById('addAnimeModal').classList.remove('active'); clearModalFields(); }
+        });
+
+        function clearModalFields() {
+            document.getElementById('animeUrl').value = '';
+            document.getElementById('animeTitle').value = '';
+            document.getElementById('animeCover').value = '';
+            document.getElementById('coverPreview').style.display = 'none';
+            document.getElementById('coverPreviewImg').src = '';
+            document.getElementById('openBiliPage').style.display = 'none';
+            document.getElementById('addAnimeModal').querySelector('h3').textContent = '✨ 添加追番';
+            document.getElementById('confirmAdd').textContent = '添加';
+            document.getElementById('confirmAdd').dataset.editIndex = '';
+            autoFilledScore = null;
+            autoFillHint.textContent = defaultHintText;
+            autoFillHint.style.color = '';
+        }
+
+        // Open edit modal pre-filled with anime data
+        function openEditModal(index) {
+            const list = loadAnimeList();
+            const anime = list[index];
+            if (!anime) return;
+
+            // Extract md number from biliUrl
+            const mediaId = extractMediaId(anime.biliUrl) || '';
+            const mdInput = `md${mediaId}`;
+
+            document.getElementById('animeUrl').value = mdInput;
+            document.getElementById('animeTitle').value = anime.title || '';
+            document.getElementById('animeCover').value = anime.cover || '';
+            
+            // Show preview if cover exists
+            if (anime.cover && isValidCoverUrl(anime.cover)) {
+                document.getElementById('coverPreviewImg').src = anime.cover;
+                document.getElementById('coverPreview').style.display = 'block';
+            } else {
+                document.getElementById('coverPreview').style.display = 'none';
+            }
+
+            // Change modal to edit mode
+            document.getElementById('addAnimeModal').querySelector('h3').textContent = '️ 编辑追番';
+            document.getElementById('confirmAdd').textContent = '保存';
+            document.getElementById('confirmAdd').dataset.editIndex = index;
+
+            document.getElementById('addAnimeModal').classList.add('active');
+        }
+
+        let confirmAddProcessing = false;
+        // Initialize editIndex to empty string on page load
+        document.getElementById('confirmAdd').dataset.editIndex = '';
+
+        document.getElementById('confirmAdd').addEventListener('click', async () => {
+            if (confirmAddProcessing) return;
+            confirmAddProcessing = true;
+
+            try {
+                const input = document.getElementById('animeUrl').value.trim();
+                const title = document.getElementById('animeTitle').value.trim();
+                const coverInput = document.getElementById('animeCover').value.trim();
+                const editIndex = document.getElementById('confirmAdd').dataset.editIndex;
+
+                console.log('confirmAdd clicked:', { input, title, coverInput, editIndex });
+
+                if (!input) { alert('请填写番剧编号'); return; }
+                if (!isValidMediaId(input)) { alert('请输入有效的番剧编号\n格式：md26367205'); return; }
+                if (!title) { alert('请填写番剧名称'); return; }
+
+                const mediaId = extractMediaId(input);
+                const biliUrl = `https://www.bilibili.com/bangumi/media/md${mediaId}/`;
+                const cover = (coverInput && isValidCoverUrl(coverInput)) ? coverInput : '';
+
+                const animeList = loadAnimeList();
+                console.log('Current animeList:', animeList);
+
+                if (editIndex !== '' && editIndex !== undefined) {
+                    // Edit mode - update existing anime
+                    const idx = parseInt(editIndex);
+                    if (animeList[idx]) {
+                        animeList[idx].title = title;
+                        animeList[idx].cover = cover;
+                        // Update biliUrl if md number changed
+                        if (animeList[idx].biliUrl !== biliUrl) {
+                            // Check if new URL already exists
+                            if (animeList.some((a, i) => a.biliUrl === biliUrl && i !== idx)) {
+                                alert('这个编号的番剧已经存在');
+                                return;
+                            }
+                            animeList[idx].biliUrl = biliUrl;
+                        }
+                    }
+                } else {
+                    // Add mode - check duplicate
+                    if (animeList.some(a => a.biliUrl === biliUrl)) {
+                        alert('这部番剧已经添加过了');
+                        return;
+                    }
+                    animeList.push({ title, score: autoFilledScore, biliUrl, cover });
+                    console.log('Added new anime:', { title, score: autoFilledScore, biliUrl, cover });
+                }
+
+                saveAnimeList(animeList);
+                console.log('Saved animeList:', animeList);
+                renderAnimeGrid();
+                document.getElementById('addAnimeModal').classList.remove('active');
+                clearModalFields();
+            } catch(e) {
+                console.error('添加追番出错:', e);
+                alert('添加时出错，请重试');
+            } finally {
+                confirmAddProcessing = false;
+            }
+        });
+
+        // --- Modal: batch add ---
+        document.getElementById('batchAddBtn').addEventListener('click', () => {
+            document.getElementById('batchAddModal').classList.add('active');
+        });
+        document.getElementById('cancelBatchAdd').addEventListener('click', () => {
+            document.getElementById('batchAddModal').classList.remove('active');
+            document.getElementById('batchAddUrls').value = '';
+        });
+        document.getElementById('batchAddModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) {
+                document.getElementById('batchAddModal').classList.remove('active');
+                document.getElementById('batchAddUrls').value = '';
+            }
+        });
+        document.getElementById('confirmBatchAdd').addEventListener('click', batchAdd);
+
+        // --- Export anime list as JSON ---
+        document.getElementById('exportBtn').addEventListener('click', () => {
+            const list = loadAnimeList();
+            if (list.length === 0) { alert('追番列表为空，没有可导出的数据'); return; }
+            const data = JSON.stringify(list, null, 2);
+            const blob = new Blob([data], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `tushanmumu_anime_${new Date().toISOString().slice(0, 10)}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            alert(`已导出 ${list.length} 部番剧\n\n文件保存后，可在另一台电脑上用"导入"功能恢复`);
+        });
+
+        // --- Import anime list from JSON ---
+        document.getElementById('importBtn').addEventListener('click', () => {
+            document.getElementById('importFileInput').click();
+        });
+        document.getElementById('importFileInput').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                try {
+                    const imported = JSON.parse(ev.target.result);
+                    if (!Array.isArray(imported)) throw new Error('格式错误');
+                    const list = loadAnimeList();
+                    let added = 0;
+                    for (const item of imported) {
+                        if (!item.biliUrl) continue;
+                        if (list.some(a => a.biliUrl === item.biliUrl)) continue;
+                        list.push({
+                            title: item.title || '未知番剧',
+                            score: item.score || null,
+                            biliUrl: item.biliUrl,
+                            cover: item.cover || ''
+                        });
+                        added++;
+                    }
+                    saveAnimeList(list);
+                    renderAnimeGrid();
+                    alert(`导入完成！\n新增 ${added} 部番剧${imported.length - added > 0 ? `，跳过 ${imported.length - added} 部重复` : ''}`);
+                } catch(err) {
+                    alert('导入失败：文件格式不正确\n\n请确保选择的是之前导出的 .json 文件');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = ''; // Reset so same file can be re-imported
+        });
+
+        // --- Modal: confirm delete ---
+        document.getElementById('cancelDelete').addEventListener('click', () => {
+            document.getElementById('confirmDeleteModal').classList.remove('active');
+        });
+        document.getElementById('confirmDeleteModal').addEventListener('click', (e) => {
+            if (e.target === e.currentTarget) document.getElementById('confirmDeleteModal').classList.remove('active');
+        });
+
+        // --- Batch delete button ---
+        document.getElementById('batchDeleteBtn').addEventListener('click', () => {
+            enterBatchMode();
+        });
+        document.getElementById('batchConfirmBtn').addEventListener('click', () => {
+            batchDeleteConfirm();
+        });
+        document.getElementById('batchCancelBtn').addEventListener('click', () => {
+            exitBatchMode();
+        });
+
+        // Stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.setProperty('--duration', (2 + Math.random() * 4) + 's');
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.width = (2 + Math.random() * 3) + 'px';
+            star.style.height = star.style.width;
+            starsContainer.appendChild(star);
+        }
+
+        // Sakura
+        const canvas = document.getElementById('sakuraCanvas');
+        const ctx = canvas.getContext('2d');
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Petal {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width; this.y = -20;
+                this.size = 8 + Math.random() * 12; this.speedY = 0.5 + Math.random() * 1.5;
+                this.speedX = -0.5 + Math.random() * 1; this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.02; this.opacity = 0.3 + Math.random() * 0.5;
+                this.wobble = Math.random() * Math.PI * 2; this.wobbleSpeed = 0.02 + Math.random() * 0.03;
+            }
+            update() {
+                this.y += this.speedY; this.wobble += this.wobbleSpeed;
+                this.x += this.speedX + Math.sin(this.wobble) * 0.5;
+                this.rotation += this.rotationSpeed;
+                if (this.y > canvas.height + 20) this.reset();
+            }
+            draw() {
+                ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotation);
+                ctx.globalAlpha = this.opacity; ctx.fillStyle = '#ffb7c5';
+                ctx.beginPath(); ctx.ellipse(0, 0, this.size * 0.6, this.size * 0.3, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#ff8fab'; ctx.beginPath(); ctx.ellipse(this.size * 0.2, 0, this.size * 0.4, this.size * 0.2, 0.3, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        const petals = Array.from({ length: 15 }, () => { const p = new Petal(); p.y = Math.random() * canvas.height; return p; });
+        function animateSakura() { ctx.clearRect(0, 0, canvas.width, canvas.height); petals.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateSakura); }
+        animateSakura();
+
+        // Sparkle
+        let lastSparkle = 0;
+        document.addEventListener('mousemove', (e) => {
+            const now = Date.now(); if (now - lastSparkle < 80) return; lastSparkle = now;
+            const sparkle = document.createElement('div'); sparkle.className = 'sparkle';
+            sparkle.style.left = e.clientX - 4 + 'px'; sparkle.style.top = e.clientY - 4 + 'px';
+            document.body.appendChild(sparkle); setTimeout(() => sparkle.remove(), 600);
+        });
+
+        // Mobile menu
+        const menuBtn = document.getElementById('menuBtn');
+        const navLinks = document.getElementById('navLinks');
+        menuBtn.addEventListener('click', () => { navLinks.classList.toggle('active'); menuBtn.textContent = navLinks.classList.contains('active') ? '✕' : '☰'; });
+        navLinks.querySelectorAll('a').forEach(link => { link.addEventListener('click', () => { navLinks.classList.remove('active'); menuBtn.textContent = '☰'; }); });
+
+        // Music controls — click to expand/collapse panel
+        const musicControl = document.querySelector('.music-control');
+        document.getElementById('musicToggle').addEventListener('click', (e) => {
+            e.stopPropagation();
+            musicControl.classList.toggle('open');
+        });
+        document.getElementById('bgmPlayBtn').addEventListener('click', () => {
+            if (typeof toggleBGM === 'function') toggleBGM();
+        });
+        document.getElementById('bgmPrevBtn').addEventListener('click', () => {
+            if (typeof prevTrack === 'function') prevTrack();
+        });
+        document.getElementById('bgmNextBtn').addEventListener('click', () => {
+            if (typeof nextTrack === 'function') nextTrack();
+        });
+    </script>
+    <script src="bgm.js"></script>
+</body>
+</html>
