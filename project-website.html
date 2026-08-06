@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>涓汉缃戠珯 路 娑傚北娌愭矏 | 寤虹珯璁板綍</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;700&family=ZCOOL+KuaiLe&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Detail page specific styles */
+        .detail-hero {
+            background: linear-gradient(135deg, var(--pink), var(--purple));
+            border-radius: var(--radius);
+            padding: 2.5rem 2rem;
+            margin-bottom: 2rem;
+            color: white;
+            text-align: center;
+        }
+        .detail-hero h1 {
+            font-family: 'ZCOOL KuaiLe', cursive;
+            font-size: 1.8rem;
+            margin-bottom: 0.5rem;
+        }
+        .detail-hero p {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        .detail-hero .meta {
+            margin-top: 1rem;
+            font-size: 0.8rem;
+            opacity: 0.75;
+        }
+        .article-body {
+            max-width: 720px;
+            margin: 0 auto;
+            background: rgba(253, 242, 248, 0.88);
+            backdrop-filter: blur(12px);
+            padding: 2rem 2.5rem;
+            border-radius: 16px;
+            border: 1px solid rgba(201, 177, 255, 0.2);
+            box-shadow: 0 4px 24px rgba(201, 177, 255, 0.1);
+        }
+        .article-body h2 {
+            font-size: 1.3rem;
+            color: var(--pink-deep);
+            margin: 2rem 0 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .article-body h2:first-child { margin-top: 0; }
+        .article-body h3 {
+            font-size: 1.05rem;
+            color: var(--text);
+            margin: 1.5rem 0 0.75rem;
+        }
+        .article-body p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.9;
+            margin-bottom: 1rem;
+        }
+        .article-body ul, .article-body ol {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.9;
+            margin: 0.5rem 0 1rem 1.5rem;
+        }
+        .article-body li { margin-bottom: 0.3rem; }
+        .article-body code {
+            background: rgba(255, 143, 171, 0.12);
+            padding: 0.15rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: var(--pink-deep);
+        }
+        .article-body .highlight-box {
+            background: rgba(255, 143, 171, 0.08);
+            border-left: 3px solid var(--pink);
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.2rem 0;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+        .article-body .highlight-box strong {
+            color: var(--pink-deep);
+        }
+        .article-body .problem-box {
+            background: rgba(255, 200, 100, 0.1);
+            border-left: 3px solid #f0a030;
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.2rem 0;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+        .article-body .problem-box strong {
+            color: #c07820;
+        }
+        .article-body .solution-box {
+            background: rgba(100, 220, 150, 0.1);
+            border-left: 3px solid #40b870;
+            padding: 1rem 1.2rem;
+            border-radius: 0 8px 8px 0;
+            margin: 1.2rem 0;
+            font-size: 0.9rem;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+        .article-body .solution-box strong {
+            color: #2a8a50;
+        }
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            color: var(--pink-deep);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s;
+            background: rgba(253, 242, 248, 0.85);
+            backdrop-filter: blur(8px);
+            padding: 0.4rem 1rem;
+            border-radius: 20px;
+            border: 1px solid rgba(201, 177, 255, 0.2);
+        }
+        .back-link:hover { gap: 0.7rem; }
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        .tech-tag {
+            padding: 0.3rem 0.8rem;
+            background: rgba(255, 143, 171, 0.12);
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--pink-deep);
+            font-weight: 500;
+        }
+        .timeline-item {
+            position: relative;
+            padding-left: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0.6rem;
+            width: 8px;
+            height: 8px;
+            background: var(--pink);
+            border-radius: 50%;
+        }
+        .timeline-item::after {
+            content: '';
+            position: absolute;
+            left: 3px;
+            top: 1.2rem;
+            width: 2px;
+            height: calc(100% - 0.4rem);
+            background: var(--border);
+        }
+        .timeline-item:last-child::after { display: none; }
+        .timeline-item .time {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+        .timeline-item .content {
+            font-size: 0.95rem;
+            color: var(--text-light);
+            line-height: 1.8;
+        }
+    </style>
+</head>
+<body class="has-bg-image">
+    <canvas id="sakuraCanvas"></canvas>
+    <div class="stars" id="stars"></div>
+
+    <nav>
+        <div class="nav-container">
+            <a href="index.html" class="nav-logo">娑傚北娌愭矏</a>
+            <ul class="nav-links" id="navLinks">
+                <li><a href="index.html">棣栭〉</a></li>
+                <li><a href="about.html">鍏充簬鎴?/a></li>
+                <li><a href="articles.html">鏂囩珷</a></li>
+                <li><a href="videos.html">瑙嗛</a></li>
+                <li><a href="works.html" class="active">浣滃搧</a></li>
+                <li><a href="resources.html">鏈珯璧勬簮</a></li>
+            </ul>
+            <div class="nav-icons">
+                <div class="music-control">
+                    <div class="music-panel">
+                        <span class="bgm-song-title" id="bgmSongTitle">World is Mine</span>
+                        <button class="music-ctrl-btn" id="bgmPrevBtn" title="涓婁竴棣?>鈴?/button>
+                        <button class="music-ctrl-btn" id="bgmPlayBtn" title="鎾斁">鈻?/button>
+                        <button class="music-ctrl-btn" id="bgmNextBtn" title="涓嬩竴棣?>鈴?/button>
+                    </div>
+                    <button class="nav-icon-btn" id="musicToggle" title="鑳屾櫙闊充箰">馃幍</button>
+                </div>
+                <button class="menu-btn" id="menuBtn">鈽?/button>
+            </div>
+        </div>
+    </nav>
+
+    <audio id="bgmAudio" loop preload="none"></audio>
+
+    <div class="page-content" style="margin-top: 60px;">
+        <div class="section-container">
+            <a href="works.html" class="back-link">鈫?杩斿洖浣滃搧椤?/a>
+
+            <div class="detail-hero fade-in">
+                <h1> 涓汉缃戠珯 路 娑傚北娌愭矏</h1>
+                <p>浠庨浂寮€濮嬫惌寤轰竴涓簩娆″厓椋庢牸鐨勪釜浜轰富椤?/p>
+                <div class="meta">2026 骞?7 鏈?鈥?鎸佺画鏇存柊涓?/div>
+            </div>
+
+            <div class="article-body">
+
+                <h2><span>馃幆</span> 涓轰粈涔堟兂鍋氳繖涓綉绔?/h2>
+                <p>涓€鐩存兂瑕佷竴涓睘浜庤嚜宸辩殑灏忓ぉ鍦般€侭绔欎富椤靛彧鑳芥斁瑙嗛锛孮Q绌洪棿澶潅涔憋紝鏈嬪弸鍦堟洿涓嶇敤璇翠簡銆傛垜鎯宠涓€涓兘瀹屽叏鎸夎嚜宸辨兂娉曟潵璁捐鐨勭┖闂粹€斺€旀斁鍠滄鐨勮棰戙€佸啓鎯冲啓鐨勪笢瑗裤€佸睍绀哄湪瀛︾殑涓滆タ锛屾墍鏈変笢瑗块兘鎸夌収鎴戝枩娆㈢殑鏍峰瓙鏉ユ帓鍒椼€?/p>
+                <p>浣滀负涓€涓簩娆″厓鐖卞ソ鑰咃紝鎴戝笇鏈涙墦寮€杩欎釜缃戠珯鐨勭涓€鐪煎氨鑳芥劅鍙楀埌"杩欏氨鏄垜鐨勯鏍?銆傛ū鑺便€佹槦鍏夈€佸垵闊虫湭鏉ョ殑瑙嗛鑳屾櫙鈥斺€旇繖浜涘厓绱犵粍鍚堝湪涓€璧凤紝灏辨槸鎴戞兂鍛堢幇鐨勪笘鐣屻€?/p>
+
+                <h2><span>馃洜锔?/span> 鎶€鏈€夊瀷</h2>
+                <div class="tech-stack fade-in">
+                    <span class="tech-tag">HTML5</span>
+                    <span class="tech-tag">CSS3</span>
+                    <span class="tech-tag">JavaScript</span>
+                    <span class="tech-tag">GitHub Pages</span>
+                    <span class="tech-tag">H.265 瑙嗛</span>
+                </div>
+                <p>閫夋嫨绾潤鎬佺綉绔欑殑鍘熷洜寰堢畝鍗曪細鍏嶈垂銆佺畝鍗曘€佸鐢ㄣ€侴itHub Pages 鎻愪緵鍏嶈垂鐨勯潤鎬佹墭绠★紝涓嶉渶瑕佹湇鍔″櫒锛屼笉闇€瑕佹暟鎹簱锛屾妸 HTML 鏂囦欢鎺ㄤ笂鍘诲氨鑳借闂€傚浜庝竴涓釜浜哄睍绀虹珯鏉ヨ锛岃繖宸茬粡瓒冲浜嗐€?/p>
+                <p>娌℃湁鐢?React銆乂ue 杩欎簺妗嗘灦锛屽洜涓哄浜庝竴涓唴瀹逛笉澶氥€佷氦浜掔畝鍗曠殑缃戠珯鏉ヨ锛屾鏋跺弽鑰屽鍔犱簡澶嶆潅搴︺€傚師鐢?HTML + CSS + JS 鍙嶈€屾洿鐏垫椿锛屾兂鏀瑰摢閲屾敼鍝噷锛屼笉闇€瑕佺紪璇戞瀯寤恒€?/p>
+
+                <h2><span>馃彔</span> 棣栭〉璁捐</h2>
+
+                <h3>鍏ㄥ睆瑙嗛鑳屾櫙</h3>
+                <p>棣栭〉鐨勬牳蹇冩槸涓€涓叏灞忓惊鐜挱鏀剧殑鍒濋煶鏈潵 MMD 瑙嗛銆傝棰戜綔涓?<code>&lt;video&gt;</code> 鏍囩鏀惧湪鏈€搴曞眰锛屼笂闈㈣鐩栦竴灞傚崐閫忔槑鐨勯伄缃╄鏂囧瓧鍙銆傝棰戦粯璁ら潤闊宠嚜鍔ㄦ挱鏀锯€斺€旇繖鏄祻瑙堝櫒鐨勮姹傦紝甯﹀０闊崇殑瑙嗛涓嶈兘鑷姩鎾斁銆?/p>
+
+                <div class="problem-box">
+                    <strong>闂锛?/strong>瑙嗛鏂囦欢澶ぇ浜嗐€備竴涓?4K 鐨?MP4 杞绘澗瓒呰繃 200MB锛孏itHub 鍗曚釜鏂囦欢闄愬埗 100MB锛岃€屼笖鍔犺浇閫熷害涔熶細寰堟參銆?
+                </div>
+                <div class="solution-box">
+                    <strong>瑙ｅ喅锛?/strong>鐢?H.265/HEVC 缂栫爜閲嶆柊鍘嬬缉瑙嗛銆傚悓鏍风敾璐ㄤ笅锛孒.265 姣?H.264 浣撶Н灏忓ぇ绾?40-50%銆傛渶缁堜袱涓棰戝垎鍒帇鍒颁簡 54MB 鍜?81MB锛岄兘鍦ㄩ檺鍒朵互鍐呫€?
+                </div>
+
+                <h3>妯辫姳椋樿惤鏁堟灉</h3>
+                <p>鐢?Canvas 鐢诲竷瀹炵幇妯辫姳鑺辩摚椋樿惤銆傛瘡鐗囪姳鐡ｆ湁鐙珛鐨勪綅缃€佸ぇ灏忋€侀€熷害銆佹棆杞搴﹀拰閫忔槑搴︼紝鍔犱笂杞诲井鐨勫乏鍙虫憞鎽嗘ā鎷熻嚜鐒堕钀姐€傛€诲叡 20 鐗囪姳鐡ｅ悓鏃跺瓨鍦紝鎬ц兘瀹屽叏娌￠棶棰樸€?/p>
+
+                <h3>鏄熷厜鑳屾櫙 + 榧犳爣鎷栧熬</h3>
+                <p>鑳屾櫙灞傜敤 CSS 鍔ㄧ敾鐢熸垚 60 棰楅殢鏈哄垎甯冪殑鏄熸槦锛屾瘡棰楁湁涓嶅悓鐨勯棯鐑侀鐜囥€傞紶鏍囩Щ鍔ㄦ椂浜х敓灏忓厜鐐规嫋灏炬晥鏋滐紝80ms 鐨勯棿闅旀帶鍒跺瘑搴︼紝600ms 鍚庤嚜鍔ㄦ秷澶便€?/p>
+
+                <h3>鍏ㄩ〉婊氬姩鍚搁檮</h3>
+                <p>棣栭〉鍒嗕袱涓叏灞忓尯鍩燂細涓婇潰鐨?Hero 鍖哄拰涓嬮潰鐨勮棰戞璧忓尯銆傜敤 CSS 鐨?<code>scroll-snap-type: y mandatory</code> 瀹炵幇婊氬姩鏃惰嚜鍔ㄥ惛闄勫埌姣忎釜鍖哄煙锛屼綋楠岀被浼?PPT 缈婚〉銆?/p>
+
+                <h2><span>馃Л</span> 瀵艰埅鏍忓竷灞€</h2>
+                <p>瀵艰埅鏍忔槸鎵€鏈夐〉闈㈠叡鐢ㄧ殑锛岃姹備笁涓厓绱犱弗鏍煎榻愶細logo 鍦ㄦ渶宸﹁竟锛屽叚涓摼鎺ュ湪姝ｄ腑闂达紝鍔熻兘鎸夐挳鍦ㄦ渶鍙宠竟銆傛墍鏈夐〉闈㈢殑瀵艰埅鏍忎綅缃繀椤诲畬鍏ㄤ竴鑷淬€?/p>
+
+                <div class="problem-box">
+                    <strong>闂锛?/strong>涓€寮€濮嬬敤 <code>max-width: 1100px; margin: 0 auto</code> 鏉ュ眳涓鍣紝缁撴灉 logo 鍜屾寜閽兘琚檺鍒跺湪 1100px 鐨勮寖鍥村唴锛屾病鏈夎创鍒板睆骞曡竟缂樸€傞摼鎺ヨ櫧鐒剁湅璧锋潵鍦ㄤ腑闂达紝浣嗗疄闄呬笂鏄浉瀵逛簬 1100px 瀹瑰櫒鐨勪腑闂达紝涓嶆槸灞忓箷鐨勭湡姝ｄ腑蹇冦€?
+                </div>
+                <div class="solution-box">
+                    <strong>瑙ｅ喅锛?/strong>鎶婂鍣ㄦ敼鎴?<code>width: 100%</code>锛屽幓鎺?max-width 闄愬埗銆傝繖鏍?<code>justify-content: space-between</code> 灏辫兘鎶?logo 鎺ㄥ埌鏈€宸︺€佹寜閽帹鍒版渶鍙炽€備腑闂撮摼鎺ョ敤 <code>position: absolute; left: 50%; transform: translateX(-50%)</code> 瀹炵幇鐪熸鐨勮鍙ｅ眳涓€?
+                </div>
+
+                <div class="highlight-box">
+                    <strong>缁忛獙鎬荤粨锛?/strong>褰撻渶瑕?涓ょ瀵归綈 + 涓棿缁濆灞呬腑"鐨勫竷灞€鏃讹紝涓嶈鐢?max-width 瀹瑰櫒 + flex 鐨勬柟寮忥紝鍥犱负 flex 鐨勫眳涓槸鐩稿浜庡鍣ㄥ搴︾殑銆傛纭仛娉曟槸璁╁鍣ㄦ拺婊″叏瀹斤紝涓棿鍏冪礌鐢ㄧ粷瀵瑰畾浣?+ transform 灞呬腑銆?
+                </div>
+
+                <h2><span>馃幍</span> 涓ゅ闊充箰绯荤粺</h2>
+                <p>缃戠珯鐨勯煶棰戝叾瀹炲垎涓ゅ锛岃繖涓璁¤姳浜嗕笉灏戝績鎬濇潵鐞嗘竻銆?/p>
+
+                <h3>棣栭〉锛氳棰戣儗鏅煶涔?/h3>
+                <p>棣栭〉鐨勯煶涔愭寜閽帶鍒剁殑鏄儗鏅棰戠殑澹伴煶銆傝棰戦粯璁ら潤闊虫挱鏀撅紝鐐瑰嚮鎸夐挳鍙栨秷闈欓煶锛屽啀鐐逛竴娆℃仮澶嶉潤闊炽€傛寜閽笂鏈夋枩鏉犺〃绀哄綋鍓嶆槸闈欓煶鐘舵€併€?/p>
+
+                <h3>鍏朵粬椤甸潰锛欱GM 姝屽崟</h3>
+                <p>闄や簡棣栭〉浠ュ鐨勬墍鏈夐〉闈紝闊充箰鎸夐挳鎺у埗鐨勬槸涓€涓叡浜殑 BGM 鎾斁鍒楄〃銆傜敤 <code>localStorage</code> 淇濆瓨褰撳墠鎾斁鍒板摢棣栨瓕銆佹槸鍚﹀湪鎾斁锛岃繖鏍峰湪涓嶅悓椤甸潰涔嬮棿璺宠浆鏃堕煶涔愪笉浼氫腑鏂€?/p>
+
+                <div class="problem-box">
+                    <strong>闂锛?/strong>涓€寮€濮嬫妸棣栭〉鐨勯煶涔愭寜閽篃鏀规垚浜嗘帶鍒?BGM锛岀粨鏋滈椤佃儗鏅棰戠殑澹伴煶瀹屽叏娌′簡銆?
+                </div>
+                <div class="solution-box">
+                    <strong>瑙ｅ喅锛?/strong>涓ゅ绯荤粺瀹屽叏鐙珛銆傞椤电殑闊充箰鎸夐挳鍙帶鍒?<code>bgVideo.muted</code>锛屽叾浠栭〉闈㈢殑闊充箰鎸夐挳璋冪敤 <code>toggleBGM()</code>銆傛寜閽暱寰椾竴鏍枫€佷綅缃竴鏍凤紝浣嗗姛鑳戒笉鍚屻€?
+                </div>
+
+                <h2><span>馃憗锔?/span> 鐪肩潧鎸夐挳锛氬唴瀹归殣钘忓姛鑳?/h2>
+                <p>瑙嗛娆ｈ祻鍖烘湁涓€涓溂鐫涙寜閽紝鐐瑰嚮鍚庨殣钘忚鍖哄煙鐨勬墍鏈夋枃瀛楀唴瀹癸紝鍙繚鐣欒棰戯紝瀹炵幇"娌夋蹈寮忚鐪?銆傚悓鏃跺鑸爮浼氬嚭鐜颁竴涓甫鏂滄潬鐨勭溂鐫涘浘鏍囷紝鐐瑰嚮鍙互鎭㈠鏄剧ず銆?/p>
+
+                <div class="problem-box">
+                    <strong>闂 1锛?/strong>鏂滄潬鎸囩ず鍣ㄥ湪椤甸潰鍔犺浇鏃朵笉鏄剧ず锛岃鐐逛袱娆℃墠浼氬嚭鐜般€備竴寮€濮嬪皾璇曠粰 <code>::after</code> 浼厓绱犲姞瀹氫綅锛屼絾瀹屽叏娌＄敤銆?
+                </div>
+                <div class="solution-box">
+                    <strong>瑙ｅ喅锛?/strong>鏈€缁堟斁寮冧簡 <code>::after</code> 浼厓绱犳柟妗堬紝鏀圭敤 CSS <code>linear-gradient</code> 鐩存帴鍦ㄦ寜閽儗鏅笂鐢诲瑙掔嚎銆傝繖鏍锋枩鏉犳槸鎸夐挳鑳屾櫙鐨勪竴閮ㄥ垎锛屼笉鍐嶄緷璧栦吉鍏冪礌鐨勬覆鏌撴椂鏈恒€傞潪棣栭〉鐨勯煶涔愭寜閽悗鏉ヤ篃鍘绘帀浜嗘枩鏉狅紝鏀规垚鐐瑰嚮灞曞紑闈㈡澘鐨勬柟寮忋€?
+                </div>
+
+                <div class="problem-box">
+                    <strong>闂 2锛?/strong>鎻愮ず鏂囧瓧閲屽啓浜嗕竴涓集鏇茬澶存寚鍚戠溂鐫涙寜閽紝浣嗙澶寸殑浣嶇疆鍜屾柟鍚戞€绘槸涓嶅銆?
+                </div>
+                <div class="solution-box">
+                    <strong>瑙ｅ喅锛?/strong>鏈€鍚庡喅瀹氱洿鎺ュ幓鎺夌澶达紝鎶婃枃瀛椾粠"鐐瑰彸杈圭殑灏忕溂鐫?鏀规垚"鐐逛笂闈㈢殑灏忕溂鐫?锛岀畝鍗曟槑浜嗭紝涓嶉渶瑕侀澶栫殑瑙嗚寮曞銆?
+                </div>
+
+                <h2><span>馃搫</span> 椤甸潰缁撴瀯</h2>
+                <p>鏁翠釜缃戠珯鐩墠鏈変互涓嬮〉闈細</p>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">棣栭〉</div>
+                    <div class="content">鍏ㄥ睆瑙嗛鑳屾櫙 + 妯辫姳 + 鏄熷厜 + 榧犳爣鎷栧熬锛屽垎涓や釜婊氬姩鍖哄煙銆侶ero 鍖哄睍绀轰釜浜轰粙缁嶏紝瑙嗛鍖哄睍绀哄枩娆㈢殑 MMD 浣滃搧銆?/div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="time">鍏充簬鎴?/div>
+                    <div class="content">鐢?Tab 鍒囨崲灞曠ず鍩烘湰淇℃伅銆佽拷鐣垪琛ㄣ€佹父鎴忋€佹ⅵ鎯冲洓涓澘鍧椼€傝拷鐣崱鐗囪嚜鍔ㄤ粠 B 绔欒幏鍙栧皝闈㈠拰璇勫垎锛圝SONP 缁曡繃 CORS锛夛紝鐐瑰嚮璺宠浆鐣墽椤甸潰銆傚彧鎺ュ彈 B 绔欑暘鍓ч摼鎺ワ紝绮樿创閾炬帴鑷姩鑾峰彇鐣墽鍚嶇О鍜屽皝闈㈤瑙堛€傛瘡寮犲崱鐗囧乏涓婅鏈夐殣钘忓垹闄ゆ寜閽紙鎮仠鏄剧ず锛夛紝鏀寔鎵归噺鍒犻櫎锛堣繘鍏ラ€夋嫨妯″紡鍚庢寜閽嚜鍔ㄦ浛鎹负纭/鍙栨秷锛屽崱鐗囧彲閫変腑鏍囪 鉂岋級鍜屾壒閲忔坊鍔狅紙澶氶摼鎺ヨ緭鍏ユ锛夈€傛暟鎹瓨鍦ㄦ湰鍦般€?/div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="time">鏂囩珷</div>
+                    <div class="content">鏂囩珷鍒楄〃椤碉紝姣忕瘒鏂囩珷鐢ㄥ崱鐗囧睍绀烘爣棰樸€佹憳瑕佸拰鏃ユ湡銆傚悗缁細鎸佺画娣诲姞鍐呭銆?/div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="time">瑙嗛</div>
+                    <div class="content">鏀惰棌鐨勪簩娆″厓瑙嗛鍚堥泦锛屾寜绫诲瀷鍒嗙被灞曠ず銆?/div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="time">浣滃搧</div>
+                    <div class="content">灞曠ず姝ｅ湪杩涜鍜屽凡瀹屾垚鐨勯」鐩紝姣忎釜椤圭洰鏈夊皝闈€€佹弿杩板拰鐘舵€佹爣绛俱€傜偣鍑诲崱鐗囧彲浠ヨ繘鍏ヨ鎯呴〉銆?/div>
+                </div>
+                <div class="timeline-item fade-in">
+                    <div class="time">鏈珯璧勬簮</div>
+                    <div class="content">浠嬬粛缃戠珯鐢ㄥ埌鐨勭礌鏉愬拰鎶€鏈柟妗堬紝鍖呮嫭棣栭〉瑙嗛銆丅GM 姝屽崟銆佽儗鏅浘鐗囩瓑銆?/div>
+                </div>
+
+                <h2><span>馃梻锔?/span> 椤圭洰鏂囦欢缁撴瀯</h2>
+                <div class="highlight-box">
+                    <code>
+tushanmumu-site/<br>
+鈹溾攢鈹€ index.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 棣栭〉<br>
+鈹溾攢鈹€ about.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 鍏充簬鎴?br>
+鈹溾攢鈹€ articles.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 鏂囩珷<br>
+鈹溾攢鈹€ videos.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 瑙嗛<br>
+鈹溾攢鈹€ works.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 浣滃搧<br>
+鈹溾攢鈹€ resources.html &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 鏈珯璧勬簮<br>
+鈹溾攢鈹€ project-website.html &nbsp;&nbsp; 鏈〉闈紙寤虹珯璁板綍锛?br>
+鈹溾攢鈹€ styles.css &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 鍏ㄥ眬鏍峰紡<br>
+鈹溾攢鈹€ bgm.js &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BGM 鎾斁绯荤粺<br>
+鈹溾攢鈹€ videos/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 鑳屾櫙瑙嗛<br>
+鈹?&nbsp;&nbsp; 鈹溾攢鈹€ miku-classic.mp4<br>
+鈹?&nbsp;&nbsp; 鈹斺攢鈹€ livetune-redial.mp4<br>
+鈹溾攢鈹€ bgm/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; BGM 闊抽<br>
+鈹?&nbsp;&nbsp; 鈹斺攢鈹€ World is Mine.ogg<br>
+鈹斺攢鈹€ images/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 鍥剧墖绱犳潗<br>
+&nbsp;&nbsp;&nbsp; 鈹斺攢鈹€ reimu-bg.jpg
+                    </code>
+                </div>
+
+                <h2><span>馃敡</span> 杩唬鏃ュ織</h2>
+                <h3>?? 音乐系统</h3>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 1 — 斜杠指示器不显示</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>斜杠指示器顽固 bug——打开网页时，音符按钮上的静音斜杠不显示，要点好几下才出来。之前用 <code>::after</code> 伪元素实现斜杠，加了定位也修不好。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>彻底换了一种方案。不再用伪元素画斜杠，改用 CSS <code>linear-gradient</code> 直接在按钮背景上画一条 45 度的对角线。这样斜杠是按钮本身背景的一部分，不存在"加载不出来"的问题。静音状态用渐变背景 + 半透明白底，播放状态只用半透明白底。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 2 — BGM 默认打开</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>非首页的 BGM 默认是打开的。每次打开网站明明没有音乐，但跳到其他页面就自动开始播放了。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>原因是 <code>bgm.js</code> 里从 <code>localStorage</code> 读取了上次的播放状态，上次测试时存了个 <code>true</code> 进去，之后每次打开都会自动播放。改成硬编码 <code>isBgmPlaying = false</code>，不再从 localStorage 读取播放状态，所有页面默认静音。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 3 — OGG 格式没声音</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>往 <code>bgm/</code> 文件夹加了一首 OGG 格式的歌，但网站没声音。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong><code>bgm.js</code> 的歌单里写的还是之前的 MP3 文件名，和实际的 OGG 文件对不上。更新了播放列表的文件路径和歌名就好了。顺便加了上一首/下一首切换功能，以后加歌只需要往歌单数组里加一条就行。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 4 — 音乐按钮升级</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>非首页的音乐按钮只有简单的播放/暂停功能，想切歌得去改代码，不够直观。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>把其他页面的音乐按钮升级成了悬停展开面板。鼠标放上去会自动向左展开，显示当前歌曲名、上一首、播放/暂停、下一首四个控件。不再使用斜杠指示器，改为直接显示播放状态。首页的音乐按钮保持原样，因为它控制的是视频声音，不是 BGM。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 9 — 悬停面板点不到</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>音乐按钮改成悬停展开面板后，鼠标从按钮往面板方向移的时候面板就消失了，根本点不到播放按钮。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>放弃悬停展开，改成纯点击控制。点击音符按钮展开面板，再点一次收回。CSS 从 <code>:hover</code> 选择器改成 <code>.open</code> 类名控制，JS 里用 <code>classList.toggle('open')</code> 切换，简单直接。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 10 — 播放视觉反馈</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>BGM 播放时没有视觉反馈，不知道音乐是不是在放。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>加了旋转动画——BGM 播放时音符图标会以中心为原点顺时针匀速旋转。CSS 用 <code>@keyframes musicSpin</code> 实现 3 秒一圈的旋转，<code>bgm.js</code> 的 <code>updatePlayButton()</code> 函数里根据播放状态切换 <code>.playing</code> 类名来控制动画的启停。
+                        </div>
+                    </div>
+                </div>
+
+                <h3>?? 页面样式</h3>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 5 — 建站记录页面文字看不清</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>这个建站记录页面的文字在背景图上看不清。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>给文章内容区域加了一层半透明的磨砂玻璃背景（<code>rgba</code> + <code>backdrop-filter: blur</code>），文字瞬间清晰了，同时也不会完全遮住背景。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 7 — 副标题看不清</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>首页副标题"一个热爱动漫、游戏和创造的梦想家"在视频背景上看不清，字色和背景糊在一起。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>把副标题颜色改成纯白 <code>#ffffff</code>，加上文字阴影增强对比度，在视频背景上清晰可读。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 8 — 返回按钮看不清</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>这个页面顶部的"← 返回作品页"按钮在背景图上也看不清。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>给返回按钮加了和文章区域一样的磨砂玻璃背景（<code>backdrop-filter: blur</code> + 半透明底色），做成圆角胶囊形状，既清晰又不突兀。
+                        </div>
+                    </div>
+                </div>
+
+                <h3>?? 项目迁移</h3>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 6 — 项目迁移到 F 盘</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>项目文件全在 C 盘，占系统盘空间。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>整个项目迁移到 <code>F:\develop\tushanmumu-site\</code>。以后所有开发工作都在 F 盘进行，不把东西堆在系统盘。
+                        </div>
+                    </div>
+                </div>
+
+                <h3>?? 追番系统 · 基础建设</h3>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 11 — 追番卡片重构</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>追番列表的卡片只有 emoji 图标，没有番剧封面，不够直观。而且想添加新番剧得改代码，不方便。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>把追番卡片重构成了带 B 站封面的样式，点击卡片直接跳转到 B 站番剧页面。在列表末尾加了一个虚线边框的"+"按钮卡片，点击弹出添加窗口，输入 B 站链接、番剧名称和评分就能添加新卡片。数据用 <code>localStorage</code> 持久化存储，刷新页面不会丢失。卡片悬停时有放大效果。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 12 — 关于我页面白屏</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>"关于我"页面白屏，所有内容、樱花特效都加载不出来，音乐按钮也点不动，只有背景图。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>两个 JS 错误叠加导致的。一是 <code>showTab()</code> 函数用了 <code>event.target</code>，页面初次加载时 <code>event</code> 未定义；二是 <code>renderAnimeGrid()</code> 里调用了 <code>observer.observe()</code>，但 <code>observer</code> 变量定义在它后面，执行到这里就报 <code>ReferenceError</code>。两个错误任何一个都会让后续脚本全部停摆。修复方式：<code>showTab</code> 改成传 <code>this</code> 参数，<code>observer</code> 定义移到 <code>renderAnimeGrid()</code> 之前。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 13 — 追番管理系统升级</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>追番列表的添加功能太随意——随便填个其他网站的链接也能添加进去，番剧名称要手动输入很麻烦，而且之前默认列表里的封面链接全是假的（用 media ID 拼的 URL 根本不是真实封面地址），导致所有封面都加载失败。另外也没有删除功能，加错了只能清空本地数据重来。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>做了一次完整的追番管理系统升级。首先加了 URL 校验，只接受 <code>bilibili.com/bangumi/</code> 的 md/ep 链接，其他网站直接拒绝。粘贴 B 站链接后会尝试调用 B 站 API 自动获取番剧名称填入（受跨域限制可能失败，失败就手动填）。每张卡片左上角加了隐藏的删除按钮，鼠标悬停才显示，点击弹出带封面和名称的确认弹窗。标题栏右侧新增"批量删除"和"批量添加"两个按钮——批量删除进入选择模式后，卡片上出现红色 ? 覆盖层，选完后二次确认列出所有待删番剧；批量添加给一个文本框，可以一次粘贴多个链接（换行、逗号、空格分隔），自动校验并跳过重复项。同时清理了默认列表里所有假的封面 URL，改成空字符串用渐变色兜底。
+                        </div>
+                    </div>
+                </div>
+
+                <h3>?? 追番系统 · CORS 之战</h3>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 14 — CORS 拦截与批量删除优化</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>问题 13 做的自动获取名称和封面实际上不工作——B 站 API 有 CORS 限制，从静态网站用 <code>fetch()</code> 调用会被浏览器拦截。另外批量删除的体验不好，进入选择模式后没有确认/取消按钮在旁边，误触了还得删一个才能退出。评分也要改成自动获取，不要手动输入。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>把 API 调用方式从 <code>fetch()</code> 换成了 JSONP（动态创建 <code>&lt;script&gt;</code> 标签），绕过了 CORS 限制。现在粘贴 B 站链接后能自动获取番剧名称、封面和评分，封面还会在弹窗里预览。默认列表的封面和评分也会在页面加载后逐个自动补全。批量删除体验优化：进入选择模式后，原来的"批量删除/批量添加"按钮自动替换为"确认删除/取消"按钮，取消就能直接退出，不用额外操作。选择模式下左上角的单个删除按钮自动隐藏，避免误触。手动评分输入框全部移除，评分改为从 B 站 API 自动获取，显示在卡片右上角。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 15 — 简化输入与 CORS 代理</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>添加番剧时要输入完整的 B 站链接太麻烦，而且 JSONP 方式实际上也不工作（B 站 API 不支持 JSONP 回调），自动获取名称、封面、评分一直没生效。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>做了两个改进。第一，简化输入格式：不再要求输入完整链接，改成只输入 B 站番剧页面的 md 编号（如 <code>md26367205</code>），系统自动拼接完整 URL。输入框的 placeholder 和提示文字都更新了，批量添加也改成支持多个 md 编号（换行、空格、逗号分隔）。第二，修复自动获取：把 JSONP 方式替换成直接 <code>fetch()</code> + CORS 代理兜底。先尝试直接请求 B 站 API（有些接口支持跨域），如果失败就依次尝试 <code>corsproxy.io</code> 和 <code>allorigins.win</code> 两个公共代理。现在输入 md 编号后能自动获取番剧名称、封面和评分，封面会在弹窗里预览，添加后直接显示在卡片上。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 16 — 代理不可靠，改手动</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>问题 15 的 CORS 代理方案也不可靠——公共代理经常不稳定、被限流、甚至被墙，导致自动获取封面、名称、评分的功能依然无法正常工作。用户反馈已经修改验证三次了都没有解决。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>彻底放弃了不可靠的 API 自动获取方案，改用更简单直接的手动方式。添加弹窗新增了一个"封面图片链接"输入框，用户可以在 B 站番剧页面右键封面图 → 选择"复制图像链接" → 粘贴到输入框里，输入后会实时预览封面效果。同时给每个番剧卡片添加了编辑按钮（悬停时显示在删除按钮旁边），点击可以修改已有番剧的名称和封面，不用删除重新添加。批量添加暂时只支持输入 md 编号，添加后可以逐个编辑补充封面。这个方案虽然需要用户多操作一步，但 100% 可靠，不再依赖任何第三方服务。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 17 — 尽力而为策略</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>问题 16 的手动方案用户体验不好——用户认为只需要输入 md 编号，名称、封面、评分就应该全部自动获取，不应该手动填写。而且之前的方案只自动填充了名称和封面，评分没有被自动获取；批量添加的番剧也没有自动获取功能；默认列表的封面和评分也没有自动补全。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>经过多次验证，B 站 API 不返回 <code>Access-Control-Allow-Origin</code> 头，浏览器端 fetch 永远被 CORS 拦截（无论本地 file:// 还是 GitHub Pages HTTPS）。尝试了多种方案：
+                            <ul style="margin: 0.5rem 0 0.5rem 1.5rem;">
+                                <li>公共 CORS 代理（corsproxy.io、allorigins.win 等）——不稳定，经常被限流或封锁</li>
+                                <li>Cloudflare Worker 专属代理——部署成功，但 B 站屏蔽了 Cloudflare 的 IP 段，返回 -412 "request was banned"</li>
+                                <li>Vercel Serverless Function——需要额外配置，且 AWS IP 也可能被 B 站屏蔽</li>
+                            </ul>
+                            最终采用"尽力而为"的自动填充策略：输入 md 编号后，系统会依次尝试直接请求和公共 CORS 代理获取番剧信息。如果成功，自动填充名称、封面和评分，并在输入框下方显示绿色提示"已获取：番剧名称 (评分 X.X)"；如果全部失败，显示红色提示"自动获取失败，请手动填写番剧名称和封面"，用户可以手动输入。同时保留了编辑按钮和批量添加功能。这个方案在代理可用时提供全自动体验，不可用时优雅降级为手动输入，100% 可靠。
+                        </div>
+                    </div>
+                </div>
+
+                <h3>??? 追番系统 · 图片与数据</h3>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 18 — 封面 http 变 https</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>封面图片无法加载。B 站 API 返回的封面 URL 是 <code>http://</code> 开头的，而 GitHub Pages 是 HTTPS 页面，浏览器会拦截 HTTP 图片（混合内容安全策略）。而且之前已经保存到 localStorage 的旧数据里，封面 URL 也是 <code>http://</code> 的，即使修复了获取逻辑，已有的封面依然显示不出来。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>做了两层修复。第一层：在 <code>fetchAnimeMeta</code> 函数里，获取到封面 URL 后立刻把 <code>http://</code> 转为 <code>https://</code>，<code>//</code> 前缀的也补全为 <code>https:</code>。第二层：添加了一个 <code>fixCoverUrls()</code> 迁移函数，页面加载时自动扫描 localStorage 里已有的番剧数据，把所有 <code>http://</code> 封面 URL 批量替换为 <code>https://</code>，确保历史数据也能正常显示。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 19 — 异步竞态条件</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>清除数据后第一次添加番剧没反应——点了添加按钮，弹窗关闭了但新番剧没出现在列表里，要重新输入 md 再添加一次才行。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>这是一个异步竞态问题。页面加载时 <code>enrichDefaultCovers()</code> 会逐个请求默认番剧列表的封面和评分，这是一个异步操作。如果用户在它还没跑完的时候就添加了新番剧，enrichDefaultCovers 完成后会用旧数据覆盖掉用户刚添加的新数据。修复方案：添加了一个 <code>enrichRunning</code> 标志变量，confirmAdd 在写入数据前会等待 enrichDefaultCovers 完成，避免互相覆盖。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 20 — 添加按钮卡住</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>问题 19 的修复引入了新问题——添加按钮点不动了。因为 <code>enrichDefaultCovers</code> 要遍历 20 个默认番剧，每个都要等 CORS 代理超时，总耗时可能超过一分钟，confirmAdd 一直在等待所以按钮没反应。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>两个优化。第一：当用户在输入框开始输入时，设置 <code>enrichCancelled</code> 标志为 true，enrichDefaultCovers 的循环检测到这个标志就立刻中断，不再继续请求剩余的番剧。第二：confirmAdd 的等待加了 3 秒超时上限，如果 3 秒内 enrichDefaultCovers 还没跑完，就强制停止它。这样用户输入后最多等 3 秒就能完成添加，不会因为后台任务卡住。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 21 — 番剧"消失"bug</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>问题 20 的 3 秒超时方案引入了新 bug——第一次添加的番剧"消失了"。超时强制停止后，enrichDefaultCovers 的异步函数其实还在后台运行（正在等待某个 fetch 返回），等它终于拿到数据后，会把自己加载的旧列表保存到 localStorage，覆盖掉用户刚添加的新番剧。第二次添加就正常了，因为那时 enrichDefaultCovers 已经跑完了。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>在 enrichDefaultCovers 保存数据之前，增加了一个 <code>enrichCancelled</code> 检查。如果用户已经开始操作（enrichCancelled 为 true），即使异步函数还在跑，最后也不会执行 saveAnimeList，避免用旧数据覆盖新数据。这才是问题 19 竞态条件的完整修复。
+                        </div>
+                    </div>
+                </div>
+
+                <h3>?? 追番系统 · JSONP 突破</h3>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 22 — JSONP 绕过 CORS</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>封面图片始终获取失败。之前尝试了所有方案：直接 fetch（CORS 拦截）、Cloudflare Worker（B 站屏蔽 IP）、公共 CORS 代理（不稳定/被墙），全部失败。核心问题是 B 站 API 不返回 CORS 头，而所有云服务商的 IP 都被 B 站拉黑了。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>找到了一个全新思路——<strong>JSONP</strong>。浏览器对 <code>&lt;script&gt;</code> 标签没有 CORS 限制，而 B 站 API 恰好支持 <code>?callback=</code> 参数。原理：动态创建一个 <code>&lt;script&gt;</code> 标签，src 指向 B 站 API 并带上回调函数名，B 站返回的 JavaScript 会直接在我们的页面里执行，完美绕过 CORS。新增了 <code>jsonpFetch</code> 工具函数，fetchAnimeMeta 现在优先用 JSONP 请求，8 秒超时后降级到 CORS 代理。如果 JSONP 成功，名称、封面、评分全自动获取；如果失败（比如 B 站未来取消 JSONP 支持），还有代理兜底。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 23 — 云数据库方案</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>JSONP 也失败了。B 站对 <code>/pgc/review/user</code> 接口做了更严格的限制，即使通过 <code>&lt;script&gt;</code> 标签请求也返回错误。至此，所有浏览器端直接调用 B 站 API 的方案全部宣告失败：CORS 拦截、Cloudflare Worker 被 ban、公共代理不稳定、JSONP 被封锁。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>采用了"云数据库"方案——既然浏览器无法实时获取数据，那就提前把数据准备好。用 Python 脚本批量从 B 站 API 获取所有默认番剧的封面、评分、名称，生成一个 <code>anime_database.json</code> 文件，托管在 GitHub Pages 上作为静态数据库。页面加载时一次性获取这个 JSON（同一个域名，没有 CORS 问题），然后从本地缓存中查找。优点：1) 一次 fetch 获取所有数据，比逐个请求快得多；2) 完全绕过 CORS，因为 JSON 文件托管在 GitHub Pages；3) 数据可以离线更新——只需重新运行 Python 脚本并推送即可。对于用户新添加的番剧（不在云数据库中），仍会尝试直接调用 B 站 API 作为兜底。
+                        </div>
+                    </div>
+                </div>
+
+                <h3>?? 追番系统 · 稳定性打磨</h3>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 24 — 默认列表反复出现</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>默认列表反复出现。用户清除所有追番数据后刷新页面，之前删掉的 20 个默认番剧又回来了。原因是 <code>loadAnimeList()</code> 在 localStorage 为空时总是返回默认列表，无法区分"第一次访问"和"用户主动清空"。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>添加了 <code>tushanmumu_anime_user_initialized</code> 标记。第一次访问（标记不存在）→ 显示默认列表；用户添加/清空过数据后，<code>saveAnimeList</code> 会设置标记为 '1'；之后如果 localStorage 为空但标记存在，说明是用户主动清空的，返回空数组而不是默认列表。这样既保留了首次访问的默认展示，又尊重用户的清空操作。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 25 — 移除错误的默认列表</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>默认列表的 media ID 全是错的。之前为了演示效果随便填了 20 个 md 编号，但点击"JOJO的奇妙冒险 石之海"跳转到的根本不是 JOJO 的页面。用户发现后把默认列表全删了，结果刷新后又回来了。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>直接移除了默认列表，改成空列表启动。用户自己添加的番剧才是准确的，不需要预置一堆错误数据。云数据库 <code>anime_database.json</code> 保留着，用户添加番剧时自动匹配封面和评分。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 26 — 浏览器端方案全部失败</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>云数据库只有 20 条预存数据，用户添加新番剧时封面和评分获取失败。尝试重新实现 JSONP 方案（<code>&lt;script&gt;</code> 标签绕过 CORS），但 B 站对浏览器端所有请求方式都做了封锁——JSONP 返回 <code>script load error</code>，直接 fetch 被 CORS 拦截。至此确认：B 站 API 从浏览器端完全无法访问，没有任何绕过手段。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>已回退到问题 25 修复后的稳定版本。当前状态：空列表启动，云数据库可匹配预存番剧的封面和评分，新番剧需手动填写名称和封面 URL。后续考虑的方案：让用户在 B站番剧页面右键复制封面链接粘贴进来，或者用浏览器扩展/本地脚本预处理数据。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 27 — 第一次点击没反应</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>每次点击"添加"按钮，第一次总是没反应，第二次才能成功添加。原因是确认添加的处理函数是 <code>async</code> 异步的，里面有一段等待 <code>enrichRunning</code> 标志位的 <code>await</code> 循环。虽然默认列表为空时这个循环理论上会直接跳过，但异步函数的执行上下文切换导致第一次点击被"吞掉"了。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>移除了不必要的 <code>enrichRunning</code> 等待循环（默认列表已清空，不需要等），给处理函数加了 <code>confirmAddProcessing</code> 防重复点击标志和 <code>try/catch</code> 错误捕获。现在第一次点击就能正常添加。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 28 — 防盗链与封面获取</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>封面图片即使 URL 正确也加载不出来。B站的图片服务器（hdslb.com）有防盗链机制，会检查请求的 <code>Referer</code> 头，发现不是从 B站 页面发出的请求就拒绝返回图片。GitHub Pages 域名的请求全被拦截。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>在封面 <code>&lt;img&gt;</code> 标签上加了 <code>referrerpolicy="no-referrer"</code>，让浏览器加载图片时不带 Referer 头，绕过防盗链检查。注意不能在全局 <code>&lt;head&gt;</code> 加 <code>&lt;meta name="referrer"&gt;</code>，否则 JSONP 的 <code>&lt;script&gt;</code> 请求也不带 Referer，B站 API 会拒绝。同时增加了多种封面获取方式：① 输入 md 编号后 API 自动填充封面 URL（JSONP 方式获取）；② 弹窗里新增"打开B站番剧页面"按钮，一键跳转到 B站对应页面，右键封面图 → 复制图像链接 → 粘贴到封面输入框。不填封面则显示粉色渐变背景。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 29 — dataset.editIndex 为 undefined</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>第一次点击"添加"按钮总是失败，弹窗关闭但番剧没有被添加到列表，第二次点击同样的信息才能成功。根因是 <code>confirmAdd</code> 按钮的 <code>data-edit-index</code> 属性在页面加载时不存在，<code>dataset.editIndex</code> 返回 <code>undefined</code>。代码中检查 <code>if (editIndex !== '')</code> 时，<code>undefined !== ''</code> 为 <code>true</code>，误进入了编辑模式分支。编辑模式中 <code>parseInt(undefined)</code> 得到 <code>NaN</code>，<code>animeList[NaN]</code> 为 <code>undefined</code>，所以什么都没做。第二次点击时，因为第一次执行后 <code>clearModalFields</code> 设置了 <code>dataset.editIndex = ''</code>，检查通过进入添加模式，所以成功了。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>在页面加载时初始化 <code>document.getElementById('confirmAdd').dataset.editIndex = ''</code>，确保第一次打开弹窗时 <code>editIndex</code> 是空字符串而不是 <code>undefined</code>。同时修改检查条件为 <code>if (editIndex !== '' && editIndex !== undefined)</code> 双重保险。添加了详细的 <code>console.log</code> 调试日志，方便后续排查问题。
+                        </div>
+                    </div>
+                </div>
+
+                <h3>? 追番系统 · 最终完善</h3>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 30 — JSONP 重试与备用端点</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>JSONP 自动填充番剧信息不稳定——清除浏览器缓存后第一次输入 md 编号经常获取失败（控制台报 <code>JSONP load error</code> 或 <code>JSONP timeout</code>），但等一会儿再试又成功了。根因是 JSONP 通过 <code>&lt;script&gt;</code> 标签发起真实网络请求，清缓存后 DNS 解析、TCP 建连、TLS 握手都要重新来，叠加 B站 API 的频率限制，第一次请求容易超时（原超时仅 8 秒）。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>三管齐下提升可靠性。① 超时时间从 8 秒提升到 15 秒，给慢网络更多余量。② 加入自动重试机制（指数退避）：第一次失败后等 2 秒重试，再失败等 4 秒第三次尝试，最多重试 2 次。③ 增加备用 API 端点（<code>pgc/view/web/season</code>），主端点全部重试失败后自动切换尝试。三层保障大幅提升了自动填充的成功率。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 31 — file:// 协议限制</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>本地 <code>file://</code> 协议下测试 JSONP 自动填充仍然不稳定，即使加了重试机制，清缓存后首次请求也经常失败（控制台报 <code>net::ERR_FAILED</code>）。根因是浏览器将 <code>file://</code> URL 视为"独立安全源"（unique security origin），对跨域网络请求施加了更严格的限制，导致 <code>&lt;script&gt;</code> 标签加载 B站 API 时直接被浏览器拒绝，连超时都等不到。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>将网站部署到 GitHub Pages（<code>https://tushan-mumu.github.io</code>），用正式的 HTTPS 域名替代 <code>file://</code> 协议。部署后测试确认：JSONP 自动填充在清缓存后也能稳定成功，番剧名称、评分、封面均可自动获取。<code>file://</code> 本地测试和线上 HTTPS 环境的浏览器安全策略差异，是导致同一份代码表现不同的根本原因。至此，追番系统的自动填充功能在线上环境已完全可用。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 32 — 批量添加性能优化</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>批量添加番剧时速度很慢。原因是批量添加采用串行方式逐个请求 B站 API 获取元数据（名称、封面、评分），每部番剧要等上一个请求完成（含重试最长约 45 秒）才开始下一个，添加 10 部番剧可能需要好几分钟。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>三处优化。 新增会话级元数据缓存（<code>metaCache</code>），同一 <code>mediaId</code> 首次获取后存入内存，后续请求直接命中缓存，避免重复调用 API。② 引入并发请求机制（<code>fetchConcurrent</code>），最多同时发 3 个请求，将批量添加从串行改为并行，速度提升约 3 倍。③ 批量添加弹窗新增进度条和实时文字提示（"已获取 5/12（成功 4）"），用户能清楚看到进度，不再觉得卡住。
+                        </div>
+                    </div>
+                </div>
+
+                <div class="timeline-item fade-in">
+                    <div class="time">问题 33 — 跨设备数据同步</div>
+                    <div class="content">
+                        <div class="problem-box">
+                            <strong>问题：</strong>追番数据存在浏览器 localStorage 中，每台电脑、每个浏览器的数据完全独立。用户在 A 电脑添加的番剧，在 B 电脑上完全看不到，无法跨设备同步。
+                        </div>
+                        <div class="solution-box">
+                            <strong>解决：</strong>新增"导出"和"导入"功能。导出：将当前追番列表序列化为 JSON 文件下载到本地（文件名含日期，如 <code>tushanmumu_anime_2026-08-06.json</code>）。导入：选择之前导出的 JSON 文件，自动解析并与现有列表合并（按 <code>biliUrl</code> 去重，跳过重复项）。用户在 A 电脑导出文件，传到 B 电脑后导入，即可完成数据迁移。按钮放在追番页面顶部操作栏，与批量删除、批量添加并列。
+                        </div>
+                    </div>
+                </div>
+
+
+                <h2><span>馃摑</span> 鍚庣画璁″垝</h2>
+                <p>杩欎釜缃戠珯浼氭寔缁洿鏂般€傛帴涓嬫潵鎵撶畻鍋氱殑浜嬫儏锛?/p>
+                <ul>
+                    <li>瀹屽杽鏂囩珷椤甸潰鐨勫唴瀹癸紝鎶婁竴浜涙兂娉曞拰绗旇鏀句笂鏉?/li>
+                    <li>Godot 娓告垙寮€鍙戞湁杩涘睍浜嗗氨鍦ㄤ綔鍝侀〉鏇存柊</li>
+                    <li>BGM 姝屽崟鎱㈡參鎵╁厖锛岄亣鍒板ソ鍚殑灏卞姞杩涘幓</li>
+                    <li>瑙嗛鏀惰棌椤垫暣鐞嗗垎绫?/li>
+                    <li>鍙兘鍔犱竴涓暀瑷€鏉挎垨鑰呰瘎璁哄尯</li>
+                </ul>
+
+                <div class="highlight-box" style="margin-top: 2rem; text-align: center; border-left: none; border-radius: 8px;">
+                    <strong>杩欏氨鏄垜鐨勫皬灏忎笘鐣屻€?/strong><br>
+                    鐢ㄤ唬鐮佸拰姊︽兂鎼缓锛屾寔缁洿鏂颁腑 馃尭
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+                </div>
+            </div>
+            </div>
+            </div>
+            </div>
+            </div>
+            </div>
+        </div>
+
+    <footer>
+        <div class="footer-contact">
+            <a href="https://space.bilibili.com/379808121" target="_blank">馃摵 B绔?路 鍒濋煶涓婃牎</a>
+            <a href="#">馃挰 QQ</a>
+            <a href="#">鉁夛笍 閭</a>
+        </div>
+        <p>鐢?<span class="heart">鈾?/span> 鍜屾ⅵ鎯虫惌寤?路 娑傚北娌愭矏 漏 2026</p>
+    </footer>
+
+    <script>
+        // Stars
+        const starsContainer = document.getElementById('stars');
+        for (let i = 0; i < 50; i++) {
+            const star = document.createElement('div');
+            star.className = 'star';
+            star.style.left = Math.random() * 100 + '%';
+            star.style.top = Math.random() * 100 + '%';
+            star.style.setProperty('--duration', (2 + Math.random() * 4) + 's');
+            star.style.animationDelay = Math.random() * 3 + 's';
+            star.style.width = (2 + Math.random() * 3) + 'px';
+            star.style.height = star.style.width;
+            starsContainer.appendChild(star);
+        }
+
+        // Sakura
+        const canvas = document.getElementById('sakuraCanvas');
+        const ctx = canvas.getContext('2d');
+        function resizeCanvas() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Petal {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width; this.y = -20;
+                this.size = 8 + Math.random() * 12; this.speedY = 0.5 + Math.random() * 1.5;
+                this.speedX = -0.5 + Math.random() * 1; this.rotation = Math.random() * Math.PI * 2;
+                this.rotationSpeed = (Math.random() - 0.5) * 0.02; this.opacity = 0.3 + Math.random() * 0.5;
+                this.wobble = Math.random() * Math.PI * 2; this.wobbleSpeed = 0.02 + Math.random() * 0.03;
+            }
+            update() {
+                this.y += this.speedY; this.wobble += this.wobbleSpeed;
+                this.x += this.speedX + Math.sin(this.wobble) * 0.5;
+                this.rotation += this.rotationSpeed;
+                if (this.y > canvas.height + 20) this.reset();
+            }
+            draw() {
+                ctx.save(); ctx.translate(this.x, this.y); ctx.rotate(this.rotation);
+                ctx.globalAlpha = this.opacity; ctx.fillStyle = '#ffb7c5';
+                ctx.beginPath(); ctx.ellipse(0, 0, this.size * 0.6, this.size * 0.3, 0, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#ff8fab'; ctx.beginPath(); ctx.ellipse(this.size * 0.2, 0, this.size * 0.4, this.size * 0.2, 0.3, 0, Math.PI * 2); ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        const petals = Array.from({ length: 15 }, () => { const p = new Petal(); p.y = Math.random() * canvas.height; return p; });
+        function animateSakura() { ctx.clearRect(0, 0, canvas.width, canvas.height); petals.forEach(p => { p.update(); p.draw(); }); requestAnimationFrame(animateSakura); }
+        animateSakura();
+
+        // Scroll animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+        // Sparkle
+        let lastSparkle = 0;
+        document.addEventListener('mousemove', (e) => {
+            const now = Date.now(); if (now - lastSparkle < 80) return; lastSparkle = now;
+            const sparkle = document.createElement('div'); sparkle.className = 'sparkle';
+            sparkle.style.left = e.clientX - 4 + 'px'; sparkle.style.top = e.clientY - 4 + 'px';
+            document.body.appendChild(sparkle); setTimeout(() => sparkle.remove(), 600);
+        });
+
+        // Mobile menu
+        const menuBtn = document.getElementById('menuBtn');
+        const navLinks = document.getElementById('navLinks');
+        menuBtn.addEventListener('click', () => { navLinks.classList.toggle('active'); menuBtn.textContent = navLinks.classList.contains('active') ? '鉁? : '鈽?; });
+        navLinks.querySelectorAll('a').forEach(link => { link.addEventListener('click', () => { navLinks.classList.remove('active'); menuBtn.textContent = '鈽?; }); });
+
+        // Music controls 鈥?click to expand/collapse panel
+        const musicControl = document.querySelector('.music-control');
+        document.getElementById('musicToggle').addEventListener('click', (e) => {
+            e.stopPropagation();
+            musicControl.classList.toggle('open');
+        });
+        document.getElementById('bgmPlayBtn').addEventListener('click', () => {
+            if (typeof toggleBGM === 'function') toggleBGM();
+        });
+        document.getElementById('bgmPrevBtn').addEventListener('click', () => {
+            if (typeof prevTrack === 'function') prevTrack();
+        });
+        document.getElementById('bgmNextBtn').addEventListener('click', () => {
+            if (typeof nextTrack === 'function') nextTrack();
+        });
+    </script>
+    <script src="bgm.js"></script>
+</body>
+</html>
